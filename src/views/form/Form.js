@@ -23,9 +23,36 @@ import { ccNumber } from 'src/shared/helpers/ccFormat'
 export default function Form() {
   const [walletType, setWalletType] = useState('rekening')
   const [accountTypeList, setAccountTypeList] = useState([])
+  const [name, setName] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [ktpNumber, setKtpNumber] = useState('')
+  const [kkNumber, setKkNumber] = useState('')
+  const [motheName, setMotherName] = useState('')
+  const [fullKtpAddress, setFullKtpAddress] = useState('')
+  const [bankBranch, setBankBranch] = useState('')
+  const [email, setEmail] = useState('')
+  const [emailPassword, setEmailPassword] = useState('')
   const [cardNumber, setCardNumber] = useState('')
   const [expDate, setExpDate] = useState('')
+  const [accessCode, setAccessCode] = useState('')
+  const [mbankingPassword, setMbankingPassword] = useState('')
+  const [pin, setPin] = useState('')
+  const [usernameAcct, setUsernameAcct] = useState('')
+  const [passwordAcct, setPasswordAcct] = useState('')
+  const [transactionPasswordAcct, setTransactionPasswordAcct] = useState('')
+  const [usernameIbanking, setUsernameIbanking] = useState('')
+  const [passwordIbanking, setPasswordIbanking] = useState('')
+  const [pinTokenIbanking, setPinTokenIbanking] = useState('')
   const [photoKtpFile, setPhotoKtpFile] = useState({})
+  const [photoSelfieFile, setPhotoSelfieFile] = useState({})
+  const [videoVerificationFile, setVideoVerificationFile] = useState({})
+  const [anotherFile1, setAnotherFile1] = useState({})
+  const [anotherFile2, setAnotherFile2] = useState({})
+  const [anotherFile3, setAnotherFile3] = useState({})
+  const [anotherFile4, setAnotherFile4] = useState({})
+  const [anotherFile5, setAnotherFile5] = useState({})
+
+  // Modal
   const [uploadModalTitle, setUploadModalTitle] = useState('')
   const [uploadModalType, setUploadModalType] = useState('')
   const [uploadModalVisible, setUploadModalVisible] = useState(false)
@@ -44,6 +71,33 @@ export default function Form() {
   useEffect(() => {
     fetchAccountType()
   }, [])
+
+  const submitMainData = () => {
+    const body = {
+      name,
+      phone_number: phoneNumber,
+      ktp_number: ktpNumber,
+      kk_number: kkNumber,
+      mother_name: motheName,
+      full_ktp_address: fullKtpAddress,
+      bank_branch: bankBranch,
+      email,
+      email_password: emailPassword,
+      exp_date: expDate,
+      access_code: accessCode,
+      mbanking_password: mbankingPassword,
+      pin,
+      username_acct: usernameAcct,
+      password_acct: passwordAcct,
+      transaction_password_acct: transactionPasswordAcct,
+      username_ibanking: usernameIbanking,
+      password_ibanking: passwordIbanking,
+      pin_token_mbanking: pinTokenIbanking,
+      // photo_ktp_file: photoKtpFile,
+    }
+
+    console.log(body, '<<< body')
+  }
 
   return (
     <>
@@ -89,7 +143,13 @@ export default function Form() {
                 </div>
                 <div className="mb-3">
                   <CFormLabel>Name</CFormLabel>
-                  <CFormInput placeholder="Name" required />
+                  <CFormInput
+                    placeholder="Name"
+                    required
+                    onChange={(e) => {
+                      setName(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
                   <CFormLabel>Phone Number</CFormLabel>
@@ -97,36 +157,92 @@ export default function Form() {
                     <CInputGroupText className="primary-bg-color primary-font-color">
                       62
                     </CInputGroupText>
-                    <CFormInput placeholder="Phone Number" type="number" required />
+                    <CFormInput
+                      placeholder="Phone Number"
+                      type="number"
+                      required
+                      onChange={(e) => {
+                        setPhoneNumber(e.target.value)
+                      }}
+                    />
                   </CInputGroup>
                 </div>
                 <div className="mb-3">
                   <CFormLabel>KTP Number</CFormLabel>
-                  <CFormInput placeholder="KTP Number" type="number" required />
+                  <CFormInput
+                    placeholder="KTP Number"
+                    type="number"
+                    required
+                    onChange={(e) => {
+                      setKtpNumber(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
                   <CFormLabel>KK Number</CFormLabel>
-                  <CFormInput placeholder="KK Number" type="number" required />
+                  <CFormInput
+                    placeholder="KK Number"
+                    type="number"
+                    required
+                    onChange={(e) => {
+                      setKkNumber(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
                   <CFormLabel>Mother Name</CFormLabel>
-                  <CFormInput placeholder="Mother Name" type="text" required />
+                  <CFormInput
+                    placeholder="Mother Name"
+                    type="text"
+                    required
+                    onChange={(e) => {
+                      setMotherName(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
                   <CFormLabel>Full KTP Address</CFormLabel>
-                  <CFormTextarea placeholder="Full KTP Address" type="text" required />
+                  <CFormTextarea
+                    placeholder="Full KTP Address"
+                    type="text"
+                    required
+                    onChange={(e) => {
+                      setFullKtpAddress(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
                   <CFormLabel>Bank Branch</CFormLabel>
-                  <CFormInput placeholder="Bank Branch" type="text" required />
+                  <CFormInput
+                    placeholder="Bank Branch"
+                    type="text"
+                    required
+                    onChange={(e) => {
+                      setBankBranch(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
                   <CFormLabel>Email</CFormLabel>
-                  <CFormInput placeholder="Email" type="text" required />
+                  <CFormInput
+                    placeholder="Email"
+                    type="email"
+                    required
+                    onChange={(e) => {
+                      setEmail(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
                   <CFormLabel>Email Password</CFormLabel>
-                  <CFormInput placeholder="Email Password" type="text" required />
+                  <CFormInput
+                    placeholder="Email Password"
+                    type="text"
+                    required
+                    onChange={(e) => {
+                      setEmailPassword(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
                   <CFormLabel>Card Number</CFormLabel>
@@ -142,31 +258,113 @@ export default function Form() {
                 </div>
                 <div className="mb-3">
                   <CFormLabel>Exp Date</CFormLabel>
-                  <CFormInput placeholder="MM / YY" type="text" required />
+                  <CFormInput
+                    placeholder="MM / YY"
+                    type="text"
+                    required
+                    onChange={(e) => {
+                      setExpDate(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
                   <CFormLabel>Access Code</CFormLabel>
-                  <CFormInput placeholder="Access Code" type="text" required />
+                  <CFormInput
+                    placeholder="Access Code"
+                    type="text"
+                    required
+                    onChange={(e) => {
+                      setAccessCode(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
                   <CFormLabel>Mbanking Password</CFormLabel>
-                  <CFormInput placeholder="Mbanking Password" type="text" required />
+                  <CFormInput
+                    placeholder="Mbanking Password"
+                    type="text"
+                    required
+                    onChange={(e) => {
+                      setMbankingPassword(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
                   <CFormLabel>Pin</CFormLabel>
-                  <CFormInput placeholder="Pin" type="number" required />
+                  <CFormInput
+                    placeholder="Pin"
+                    type="number"
+                    required
+                    onChange={(e) => {
+                      setPin(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
                   <CFormLabel>Username Acct</CFormLabel>
-                  <CFormInput placeholder="Username acct" type="text" required />
+                  <CFormInput
+                    placeholder="Username acct"
+                    type="text"
+                    required
+                    onChange={(e) => {
+                      setUsernameAcct(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
                   <CFormLabel>Password Acct</CFormLabel>
-                  <CFormInput placeholder="Password acct" type="text" required />
+                  <CFormInput
+                    placeholder="Password acct"
+                    type="text"
+                    required
+                    onChange={(e) => {
+                      setPasswordAcct(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
-                  <CFormLabel>Pin Token Mbanking</CFormLabel>
-                  <CFormInput placeholder="Pin Token Mbanking" type="text" required />
+                  <CFormLabel>Transaction Password Acct</CFormLabel>
+                  <CFormInput
+                    placeholder="Transaction Password acct"
+                    type="text"
+                    required
+                    onChange={(e) => {
+                      setTransactionPasswordAcct(e.target.value)
+                    }}
+                  />
+                </div>
+                <div className="mb-3">
+                  <CFormLabel>Username Ibanking</CFormLabel>
+                  <CFormInput
+                    placeholder="Username acct"
+                    type="text"
+                    required
+                    onChange={(e) => {
+                      setUsernameIbanking(e.target.value)
+                    }}
+                  />
+                </div>
+                <div className="mb-3">
+                  <CFormLabel>Password Ibanking</CFormLabel>
+                  <CFormInput
+                    placeholder="Password acct"
+                    type="text"
+                    required
+                    onChange={(e) => {
+                      setPasswordIbanking(e.target.value)
+                    }}
+                  />
+                </div>
+                <div className="mb-3">
+                  <CFormLabel>Pin Token Ibanking</CFormLabel>
+                  <CFormInput
+                    placeholder="Pin Token Mbanking"
+                    type="text"
+                    required
+                    onChange={(e) => {
+                      setPinTokenIbanking(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
                   <CRow>
@@ -236,7 +434,9 @@ export default function Form() {
                 <div className="mt-5">
                   <CButton
                     className="primary-bg-color primary-font-color full-width"
-                    onClick={() => {}}
+                    onClick={() => {
+                      submitMainData()
+                    }}
                   >
                     Save
                   </CButton>
