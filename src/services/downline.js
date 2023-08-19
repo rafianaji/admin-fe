@@ -1,8 +1,19 @@
 import axiosSetup from './axiosSetup';
 
-export async function getClientList(query) {
+export async function checkDownlineCode(code) {
   try {
-    let url = '/client';
+    return await axiosSetup({
+      method: 'GET',
+      url: `/downline/${code}`,
+    });
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getDownlineList(query) {
+  try {
+    let url = '/downline';
     if (query) {
       url = url + query;
     }
@@ -15,11 +26,11 @@ export async function getClientList(query) {
   }
 }
 
-export async function clientLogin(body) {
+export async function createDownline(body) {
   try {
     return await axiosSetup({
       method: 'POST',
-      url: '/client/login',
+      url: '/downline',
       data: body,
     });
   } catch (error) {
@@ -27,23 +38,11 @@ export async function clientLogin(body) {
   }
 }
 
-export async function createClient(body) {
-  try {
-    return await axiosSetup({
-      method: 'POST',
-      url: '/client',
-      data: body,
-    });
-  } catch (error) {
-    throw error;
-  }
-}
-
-export async function updateClient(id, body) {
+export async function updateDownline(id, body) {
   try {
     return await axiosSetup({
       method: 'PUT',
-      url: `/client/${id}`,
+      url: `/downline/${id}`,
       data: body,
     });
   } catch (error) {
@@ -51,11 +50,11 @@ export async function updateClient(id, body) {
   }
 }
 
-export async function deleteClient(id) {
+export async function deleteDownline(id) {
   try {
     return await axiosSetup({
       method: 'DELETE',
-      url: `/client/${id}`,
+      url: `/downline/${id}`,
     });
   } catch (error) {
     throw error;
