@@ -28,6 +28,7 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 import { createAccountType, deleteAccountType, getAccountTypeList, updateAccountType } from 'src/services/accountType';
 import * as yup from 'yup';
 import queryString from 'query-string';
+import Pagination from 'src/shared/components/Pagination';
 
 export default function AccountType() {
   const [AccountTypeList, setAccountTypeList] = useState([]);
@@ -37,6 +38,9 @@ export default function AccountType() {
   const [modalActionType, setModalActionType] = useState('');
   const [nameFilter, setNameFilter] = useState('');
   const [errorForm, setErrorForm] = useState({});
+  const [page, setPage] = useState(0);
+  const [count, setCount] = useState(20);
+  const [totalCount, setTotalCount] = useState(0);
   const { search } = useLocation();
   const [, setQuery] = useSearchParams('');
 
@@ -68,10 +72,22 @@ export default function AccountType() {
     const parseQuery = queryString.parse(search);
     if (parseQuery.name) {
       setNameFilter(parseQuery.name);
+      setQuery(queryString.stringify(parseQuery));
     } else {
       delete parseQuery.name;
+      setQuery(queryString.stringify(parseQuery));
     }
-    setQuery(queryString.stringify(parseQuery));
+    if (parseQuery.page) {
+      setPage(Number(parseQuery.page));
+    }
+    if (parseQuery.count) {
+      setCount(parseQuery.count);
+    }
+    if (!parseQuery.page || !parseQuery.count || parseQuery.page === '0') {
+      parseQuery.page = 1;
+      parseQuery.count = 20;
+      setQuery(queryString.stringify(parseQuery));
+    }
   }, [search]);
 
   useEffect(() => {
@@ -88,8 +104,10 @@ export default function AccountType() {
   };
 
   const fetchAccountTypeList = () => {
-    getAccountTypeList(search).then((res) => {
-      setAccountTypeList(res.data);
+    const parseQuery = queryString.parse(search);
+    getAccountTypeList(parseQuery).then((res) => {
+      setAccountTypeList(res.data.result);
+      setTotalCount(res.data.count);
     });
   };
 
@@ -136,6 +154,24 @@ export default function AccountType() {
     setQuery(queryString.stringify(parseQuery));
   };
 
+  const setPreviousPagination = () => {
+    const parseQuery = queryString.parse(search);
+    parseQuery.page = Number(page) - 1;
+    setQuery(queryString.stringify(parseQuery));
+  };
+
+  const setPagination = (page) => {
+    const parseQuery = queryString.parse(search);
+    parseQuery.page = Number(page);
+    setQuery(queryString.stringify(parseQuery));
+  };
+
+  const setNextPagination = () => {
+    const parseQuery = queryString.parse(search);
+    parseQuery.page = Number(page) + 1;
+    setQuery(queryString.stringify(parseQuery));
+  };
+
   return (
     <>
       <CContainer fluid className="mb-4">
@@ -178,56 +214,68 @@ export default function AccountType() {
           Add Account Type
         </CButton>
         {AccountTypeList && (
-          <CTable>
-            <CTableHead>
-              <CTableRow>
-                <CTableHeaderCell scope="col">No.</CTableHeaderCell>
-                <CTableHeaderCell scope="col">Name</CTableHeaderCell>
-                <CTableHeaderCell scope="col">Category</CTableHeaderCell>
-                <CTableHeaderCell scope="col">Aksi</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
-            <CTableBody>
-              {AccountTypeList.map((el, i) => (
-                <CTableRow key={i}>
-                  <CTableDataCell align="middle">{i + 1}</CTableDataCell>
-                  <CTableDataCell align="middle">{el.name}</CTableDataCell>
-                  <CTableDataCell className="text-capitalize" align="middle">
-                    {el.category}
-                  </CTableDataCell>
-                  <CTableDataCell align="middle">
-                    <CButton
-                      size="sm"
-                      color="info"
-                      onClick={() => {
-                        setAccountTypeDetail(el);
-                        setModalActionType('detail');
-                        setShowModalTitle('Detail');
-                        formik.setValues({
-                          name: el.name,
-                          category: el.category,
-                        });
-                      }}
-                    >
-                      Cek Detail
-                    </CButton>
-                    <CButton
-                      size="sm"
-                      color="danger"
-                      className="ms-2 text-white"
-                      onClick={() => {
-                        setAccountTypeDetail(el);
-                        setModalActionType('delete');
-                        setShowModalTitle('Delete');
-                      }}
-                    >
-                      Delete
-                    </CButton>
-                  </CTableDataCell>
+          <>
+            <CTable>
+              <CTableHead>
+                <CTableRow>
+                  <CTableHeaderCell scope="col">No.</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">Name</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">Category</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">Aksi</CTableHeaderCell>
                 </CTableRow>
-              ))}
-            </CTableBody>
-          </CTable>
+              </CTableHead>
+              <CTableBody>
+                {AccountTypeList.map((el, i) => (
+                  <CTableRow key={i}>
+                    <CTableDataCell align="middle">{i + 1}</CTableDataCell>
+                    <CTableDataCell align="middle">{el.name}</CTableDataCell>
+                    <CTableDataCell className="text-capitalize" align="middle">
+                      {el.category}
+                    </CTableDataCell>
+                    <CTableDataCell align="middle">
+                      <CButton
+                        size="sm"
+                        color="info"
+                        onClick={() => {
+                          setAccountTypeDetail(el);
+                          setModalActionType('detail');
+                          setShowModalTitle('Detail');
+                          formik.setValues({
+                            name: el.name,
+                            category: el.category,
+                          });
+                        }}
+                      >
+                        Detail & Update
+                      </CButton>
+                      <CButton
+                        size="sm"
+                        color="danger"
+                        className="ms-2 text-white"
+                        onClick={() => {
+                          setAccountTypeDetail(el);
+                          setModalActionType('delete');
+                          setShowModalTitle('Delete');
+                        }}
+                      >
+                        Delete
+                      </CButton>
+                    </CTableDataCell>
+                  </CTableRow>
+                ))}
+              </CTableBody>
+            </CTable>
+            <Pagination
+              setNextPagination={setNextPagination}
+              totalCount={totalCount}
+              count={count}
+              page={page}
+              setPreviousPagination={setPreviousPagination}
+              setPagination={(e) => {
+                setPagination(e);
+              }}
+            />
+          </>
         )}
         <CModal
           backdrop="static"

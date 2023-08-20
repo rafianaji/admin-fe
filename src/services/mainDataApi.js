@@ -15,7 +15,7 @@ export async function getMainDataList(query) {
   }
 }
 
-export async function createMainData(body) {
+export async function createMainData(code, body) {
   try {
     const adminToken = await localStorage.getItem('admin_token');
     const formData = new FormData();
@@ -24,7 +24,7 @@ export async function createMainData(body) {
     }
     return await axiosSetup({
       method: 'POST',
-      url: '/main-data',
+      url: `/main-data/${code}`,
       data: formData,
       headers: {
         Authorization: `Bearer ${adminToken}`,

@@ -2,6 +2,8 @@ import React, { Component, Suspense } from 'react';
 import { HashRouter, BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './scss/style.scss';
 import { Toaster } from 'react-hot-toast';
+import AdminLayout from './layout/AdminLayout';
+import ClientLayout from './layout/ClientLayout';
 
 const loading = (
   <div className="pt-3 text-center">
@@ -34,11 +36,15 @@ class App extends Component {
             <Route exact path="/form" name="Form" element={<FormDownline />} />
             <Route exact path="/client/login" name="Form" element={<ClientLogin />} />
             <Route exact path="/admin/login" name="Form" element={<AdminLogin />} />
-            <Route path="*" name="Home" element={<DefaultLayout />} />
+            <Route path="/admin/*" name="Home" element={<AdminLayout />} />
+            <Route path="/client/*" name="Home" element={<ClientLayout />} />
           </Routes>
         </Suspense>
         <Toaster position="top-right" reverseOrder={false} />
-        {/* <div id="spin-loading" className="spin-loader"></div> */}
+        <div id="loader-spinner" className="backdrop-container">
+          <div className="loader-spinner"></div>
+          <div className="backdrop-bg" />
+        </div>
       </Router>
     );
   }

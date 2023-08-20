@@ -6,6 +6,7 @@ const axiosSetup = axios.create({
 });
 
 axiosSetup.interceptors.request.use((req) => {
+  document.getElementById('loader-spinner').style.display = 'none';
   return req;
 });
 
@@ -25,6 +26,7 @@ axiosSetup.interceptors.response.use(
     return res;
   },
   (err) => {
+    document.getElementById('loader-spinner').style.display = 'none';
     const errResponse = err?.response?.data;
     if (errResponse) {
       toast.error(errResponse.message);

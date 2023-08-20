@@ -28,6 +28,7 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 import { createDownline, deleteDownline, getDownlineList, updateDownline } from 'src/services/downline';
 import * as yup from 'yup';
 import queryString from 'query-string';
+import Pagination from 'src/shared/components/Pagination';
 
 export default function Downline() {
   const [downlineList, setDownlineList] = useState([]);
@@ -39,6 +40,9 @@ export default function Downline() {
   const [phoneFilter, setPhoneFilter] = useState('');
   const [emailFilter, setEmailFilter] = useState('');
   const [errorForm, setErrorForm] = useState({});
+  const [page, setPage] = useState(0);
+  const [count, setCount] = useState(20);
+  const [totalCount, setTotalCount] = useState(0);
   const { search } = useLocation();
   const [, setQuery] = useSearchParams('');
 
@@ -89,6 +93,17 @@ export default function Downline() {
     } else {
       delete parseQuery.email;
     }
+    if (parseQuery.page) {
+      setPage(Number(parseQuery.page));
+    }
+    if (parseQuery.count) {
+      setCount(parseQuery.count);
+    }
+    if (!parseQuery.page || !parseQuery.count || parseQuery.page === '0') {
+      parseQuery.page = 1;
+      parseQuery.count = 20;
+      setQuery(queryString.stringify(parseQuery));
+    }
     setQuery(queryString.stringify(parseQuery));
   }, [search]);
 
@@ -98,7 +113,8 @@ export default function Downline() {
 
   const fetchDownlineList = () => {
     getDownlineList(search).then((res) => {
-      setDownlineList(res.data);
+      setDownlineList(res.data.result);
+      setTotalCount(res.data.count);
     });
   };
 
@@ -155,6 +171,8 @@ export default function Downline() {
       body.phone = '62' + phoneTemp.slice(1, phoneTemp.length);
     } else if (phoneTemp[0] == 8) {
       body.phone = '62' + phoneTemp;
+    } else if (phoneTemp.slice(0, 2) == '62') {
+      body.phone = phoneTemp;
     } else {
       isError = true;
       toast.error('Invalid phone number format');
@@ -169,6 +187,24 @@ export default function Downline() {
         formik.values.email = '';
       });
     }
+  };
+
+  const setPreviousPagination = () => {
+    const parseQuery = queryString.parse(search);
+    parseQuery.page = Number(page) - 1;
+    setQuery(queryString.stringify(parseQuery));
+  };
+
+  const setPagination = (page) => {
+    const parseQuery = queryString.parse(search);
+    parseQuery.page = Number(page);
+    setQuery(queryString.stringify(parseQuery));
+  };
+
+  const setNextPagination = () => {
+    const parseQuery = queryString.parse(search);
+    parseQuery.page = Number(page) + 1;
+    setQuery(queryString.stringify(parseQuery));
   };
 
   const filterHandle = () => {
@@ -230,15 +266,18 @@ export default function Downline() {
               <CRow>
                 <CFormLabel className="col-sm-3 col-form-label">Phone</CFormLabel>
                 <CCol>
-                  <CFormInput
-                    type="number"
-                    placeholder="856999888"
-                    value={phoneFilter}
-                    onChange={(e) => {
-                      setPhoneFilter(e.target.value);
-                    }}
-                    onBlur={filterHandle}
-                  />
+                  <CInputGroup>
+                    <CInputGroupText className="secondary">62</CInputGroupText>
+                    <CFormInput
+                      type="number"
+                      placeholder="856999888"
+                      value={phoneFilter}
+                      onChange={(e) => {
+                        setPhoneFilter(e.target.value);
+                      }}
+                      onBlur={filterHandle}
+                    />
+                  </CInputGroup>
                 </CCol>
               </CRow>
             </CCol>
@@ -269,77 +308,89 @@ export default function Downline() {
           Add Downline
         </CButton>
         {downlineList && (
-          <CTable>
-            <CTableHead>
-              <CTableRow>
-                <CTableHeaderCell scope="col">No.</CTableHeaderCell>
-                <CTableHeaderCell scope="col">Name</CTableHeaderCell>
-                <CTableHeaderCell scope="col">Phone</CTableHeaderCell>
-                <CTableHeaderCell scope="col">Email</CTableHeaderCell>
-                <CTableHeaderCell scope="col">Aksi</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
-            <CTableBody>
-              {downlineList.map((el, i) => (
-                <CTableRow key={i}>
-                  <CTableDataCell align="middle">{i + 1}</CTableDataCell>
-                  <CTableDataCell align="middle">{el.name}</CTableDataCell>
-                  <CTableDataCell align="middle">{el.phone}</CTableDataCell>
-                  <CTableDataCell align="middle">{el.email}</CTableDataCell>
-                  <CTableDataCell align="middle">
-                    <CopyToClipboard
-                      text={`https://localhost:3000?downline_code=${el.code}`}
-                      onCopy={() => {
-                        {
-                          toast.success('Coppied');
-                        }
-                      }}
-                    >
-                      <CButton size="sm" color="info" className="ms-2" onClick={() => {}}>
-                        Copy Link
-                      </CButton>
-                    </CopyToClipboard>
-                    <CButton
-                      size="sm"
-                      color="success"
-                      className="ms-2"
-                      onClick={() => {
-                        window.location.href = `https://wa.me/${el.phone}?text=Ini URL kamu, silahkan klik atau copy dan paste https://localhost:3000?downline_code=${el.code}`;
-                      }}
-                    >
-                      Chat WA
-                    </CButton>
-                    <CButton
-                      size="sm"
-                      color="info"
-                      className="ms-2"
-                      onClick={() => {
-                        setDownlineDetail(el);
-                        setModalActionType('detail');
-                        setShowModalTitle('Detail');
-                        formik.setErrors({});
-                        formik.setValues({ name: el.name, phone: el.phone, email: el.email });
-                      }}
-                    >
-                      Detail
-                    </CButton>
-                    <CButton
-                      size="sm"
-                      color="danger"
-                      className="ms-2 text-white"
-                      onClick={() => {
-                        setDownlineDetail(el);
-                        setModalActionType('delete');
-                        setShowModalTitle('Delete');
-                      }}
-                    >
-                      Delete
-                    </CButton>
-                  </CTableDataCell>
+          <>
+            <CTable>
+              <CTableHead>
+                <CTableRow>
+                  <CTableHeaderCell scope="col">No.</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">Name</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">Phone</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">Email</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">Aksi</CTableHeaderCell>
                 </CTableRow>
-              ))}
-            </CTableBody>
-          </CTable>
+              </CTableHead>
+              <CTableBody>
+                {downlineList.map((el, i) => (
+                  <CTableRow key={i}>
+                    <CTableDataCell align="middle">{i + 1}</CTableDataCell>
+                    <CTableDataCell align="middle">{el.name}</CTableDataCell>
+                    <CTableDataCell align="middle">{el.phone}</CTableDataCell>
+                    <CTableDataCell align="middle">{el.email}</CTableDataCell>
+                    <CTableDataCell align="middle">
+                      <CopyToClipboard
+                        text={`https://localhost:3000?downline_code=${el.code}`}
+                        onCopy={() => {
+                          {
+                            toast.success('Coppied');
+                          }
+                        }}
+                      >
+                        <CButton size="sm" color="info" className="ms-2" onClick={() => {}}>
+                          Copy Link
+                        </CButton>
+                      </CopyToClipboard>
+                      <CButton
+                        size="sm"
+                        color="success"
+                        className="ms-2"
+                        onClick={() => {
+                          window.location.href = `https://wa.me/${el.phone}?text=Ini URL kamu, silahkan klik atau copy dan paste https://localhost:3000?downline_code=${el.code}`;
+                        }}
+                      >
+                        Chat WA
+                      </CButton>
+                      <CButton
+                        size="sm"
+                        color="info"
+                        className="ms-2"
+                        onClick={() => {
+                          setDownlineDetail(el);
+                          setModalActionType('detail');
+                          setShowModalTitle('Detail');
+                          formik.setErrors({});
+                          formik.setValues({ name: el.name, phone: el.phone.slice(2, el.phone.length), email: el.email });
+                        }}
+                      >
+                        Detail & Update
+                      </CButton>
+                      <CButton
+                        size="sm"
+                        color="danger"
+                        className="ms-2 text-white"
+                        onClick={() => {
+                          setDownlineDetail(el);
+                          setModalActionType('delete');
+                          setShowModalTitle('Delete');
+                        }}
+                      >
+                        Delete
+                      </CButton>
+                    </CTableDataCell>
+                  </CTableRow>
+                ))}
+              </CTableBody>
+            </CTable>
+            <Pagination
+              setNextPagination={setNextPagination}
+              totalCount={totalCount}
+              count={count}
+              page={page}
+              setPreviousPagination={setPreviousPagination}
+              setPagination={(e) => {
+                setPagination(e);
+              }}
+            />
+          </>
         )}
         <CModal
           backdrop="static"
@@ -395,12 +446,17 @@ export default function Downline() {
                     <CRow className="mb-3">
                       <CFormLabel className="col-sm-2 col-form-label">Phone</CFormLabel>
                       <CCol>
-                        <CFormInput
-                          value={formik.values.phone}
-                          onChange={(e) => {
-                            formik.setFieldValue('phone', e.target.value);
-                          }}
-                        />
+                        <CInputGroup>
+                          <CInputGroupText className="secondary">62</CInputGroupText>
+                          <CFormInput
+                            placeholder="856999888"
+                            type="number"
+                            value={formik.values.phone}
+                            onChange={(e) => {
+                              formik.setFieldValue('phone', e.target.value);
+                            }}
+                          />
+                        </CInputGroup>
                         <div className="text-danger text-sm">{errorForm.phone}</div>
                       </CCol>
                     </CRow>

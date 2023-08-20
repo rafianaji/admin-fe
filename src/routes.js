@@ -60,7 +60,6 @@ const AdminAccountTypeMenu = React.lazy(() => import('./views/admin/AccountType'
 
 // Client
 const ClientMainDataMenu = React.lazy(() => import('./views/client/MainData'));
-const ClientLogin = React.lazy(() => import('./views/client/Login'));
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -128,22 +127,22 @@ const routes = [
   //
 
   {
-    path: '/admin/main-data',
+    path: '/main-data',
     name: 'Admin Main Data Menu',
     element: AdminMainDataMenu,
   },
   {
-    path: '/admin/downline',
+    path: '/downline',
     name: 'Admin Downline Menu',
     element: AdminDownlineMenu,
   },
   {
-    path: '/admin/client',
+    path: '/client',
     name: 'Admin Client Menu',
     element: AdminClientMenu,
   },
   {
-    path: '/admin/account-type',
+    path: '/account-type',
     name: 'Admin Account Type Menu',
     element: AdminAccountTypeMenu,
   },

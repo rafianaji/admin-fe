@@ -145,7 +145,7 @@ export default function Form() {
 
   const fetchAccountType = () => {
     getAccountTypeList({ category: walletType }).then((res) => {
-      setAccountTypeList(res.data);
+      setAccountTypeList(res.data.result);
     });
   };
 
@@ -171,7 +171,7 @@ export default function Form() {
   const submitMainData = () => {
     const body = {
       account_type_id: formik.values.account_type_id,
-      downline_id: downlineId,
+      // downline_id: downlineId,
       name: formik.values.name,
       // phone_number: formik.values.phone_number,
       ktp_number: formik.values.ktp_number,
@@ -227,7 +227,7 @@ export default function Form() {
     }
 
     if (!isError) {
-      createMainData(body).then(() => {});
+      createMainData(downline_code, body).then(() => {});
     }
   };
 
@@ -367,18 +367,20 @@ export default function Form() {
                       />
                       <div className="text-danger text-sm">{errorForm.full_ktp_address}</div>
                     </div>
-                    <div className="mb-3">
-                      <CFormLabel>Bank Branch</CFormLabel>
-                      <CFormInput
-                        placeholder="Kab. Tangerang"
-                        type="text"
-                        required
-                        onChange={(e) => {
-                          formik.setFieldValue('bank_branch', e.target.value);
-                        }}
-                      />
-                      <div className="text-danger text-sm">{errorForm.bank_branch}</div>
-                    </div>
+                    {walletType == 'rekening' && (
+                      <div className="mb-3">
+                        <CFormLabel>Bank Branch</CFormLabel>
+                        <CFormInput
+                          placeholder="Kab. Tangerang"
+                          type="text"
+                          required
+                          onChange={(e) => {
+                            formik.setFieldValue('bank_branch', e.target.value);
+                          }}
+                        />
+                        <div className="text-danger text-sm">{errorForm.bank_branch}</div>
+                      </div>
+                    )}
                     <div className="d-flex">
                       <div className="mb-3 pe-2">
                         <CFormLabel>Email</CFormLabel>
@@ -628,8 +630,11 @@ export default function Form() {
                       <br />
                       <input
                         type="file"
+                        accept={'image/*,video/*'}
                         onChange={(e) => {
-                          setAnotherFile1(e.currentTarget.files[0]);
+                          if (e.currentTarget.files[0]) {
+                            setAnotherFile1(e.currentTarget.files[0]);
+                          }
                         }}
                       />
                     </div>
@@ -639,8 +644,11 @@ export default function Form() {
                         <br />
                         <input
                           type="file"
+                          accept={'image/*,video/*'}
                           onChange={(e) => {
-                            setAnotherFile2(e.currentTarget.files[0]);
+                            if (e.currentTarget.files[0]) {
+                              setAnotherFile2(e.currentTarget.files[0]);
+                            }
                           }}
                         />
                       </div>
@@ -651,8 +659,11 @@ export default function Form() {
                         <br />
                         <input
                           type="file"
+                          accept={'image/*,video/*'}
                           onChange={(e) => {
-                            setAnotherFile3(e.currentTarget.files[0]);
+                            if (e.currentTarget.files[0]) {
+                              setAnotherFile3(e.currentTarget.files[0]);
+                            }
                           }}
                         />
                       </div>
@@ -663,8 +674,11 @@ export default function Form() {
                         <br />
                         <input
                           type="file"
+                          accept={'image/*,video/*'}
                           onChange={(e) => {
-                            setAnotherFile4(e.currentTarget.files[0]);
+                            if (e.currentTarget.files[0]) {
+                              setAnotherFile4(e.currentTarget.files[0]);
+                            }
                           }}
                         />
                       </div>
@@ -675,8 +689,11 @@ export default function Form() {
                         <br />
                         <input
                           type="file"
+                          accept={'image/*,video/*'}
                           onChange={(e) => {
-                            setAnotherFile5(e.currentTarget.files[0]);
+                            if (e.currentTarget.files[0]) {
+                              setAnotherFile5(e.currentTarget.files[0]);
+                            }
                           }}
                         />
                       </div>

@@ -28,6 +28,7 @@ import * as yup from 'yup';
 import queryString from 'query-string';
 import { createClient, deleteClient, getClientList, updateClient } from 'src/services/client';
 import { ChromePicker } from 'react-color';
+import Pagination from 'src/shared/components/Pagination';
 
 export default function Client() {
   const [clientList, setClientList] = useState([]);
@@ -41,6 +42,9 @@ export default function Client() {
   const [emailFilter, setEmailFilter] = useState('');
   const [color, setColor] = useState('#fff');
   const [errorForm, setErrorForm] = useState({});
+  const [page, setPage] = useState(0);
+  const [count, setCount] = useState(20);
+  const [totalCount, setTotalCount] = useState(0);
   const { search } = useLocation();
   const [, setQuery] = useSearchParams('');
 
@@ -93,6 +97,17 @@ export default function Client() {
     } else {
       delete parseQuery.email;
     }
+    if (parseQuery.page) {
+      setPage(Number(parseQuery.page));
+    }
+    if (parseQuery.count) {
+      setCount(parseQuery.count);
+    }
+    if (!parseQuery.page || !parseQuery.count || parseQuery.page === '0') {
+      parseQuery.page = 1;
+      parseQuery.count = 20;
+      setQuery(queryString.stringify(parseQuery));
+    }
     setQuery(queryString.stringify(parseQuery));
   }, [search]);
 
@@ -110,7 +125,8 @@ export default function Client() {
 
   const fetchClientList = () => {
     getClientList(search).then((res) => {
-      setClientList(res.data);
+      setClientList(res.data.result);
+      setTotalCount(res.data.count);
     });
   };
 
@@ -166,6 +182,8 @@ export default function Client() {
       body.phone = '62' + phoneTemp.slice(1, phoneTemp.length);
     } else if (phoneTemp[0] == 8) {
       body.phone = '62' + phoneTemp;
+    } else if (phoneTemp.slice(0, 2) == '62') {
+      body.phone = phoneTemp;
     } else {
       isError = true;
       toast.error('Invalid phone number format');
@@ -186,6 +204,24 @@ export default function Client() {
     parseQuery.name = nameFilter;
     parseQuery.phone = phoneFilter;
     parseQuery.email = emailFilter;
+    setQuery(queryString.stringify(parseQuery));
+  };
+
+  const setPreviousPagination = () => {
+    const parseQuery = queryString.parse(search);
+    parseQuery.page = Number(page) - 1;
+    setQuery(queryString.stringify(parseQuery));
+  };
+
+  const setPagination = (page) => {
+    const parseQuery = queryString.parse(search);
+    parseQuery.page = Number(page);
+    setQuery(queryString.stringify(parseQuery));
+  };
+
+  const setNextPagination = () => {
+    const parseQuery = queryString.parse(search);
+    parseQuery.page = Number(page) + 1;
     setQuery(queryString.stringify(parseQuery));
   };
 
@@ -232,15 +268,18 @@ export default function Client() {
               <CRow>
                 <CFormLabel className="col-sm-3 col-form-label">Phone</CFormLabel>
                 <CCol>
-                  <CFormInput
-                    type="number"
-                    placeholder="856999888"
-                    value={phoneFilter}
-                    onChange={(e) => {
-                      setPhoneFilter(e.target.value);
-                    }}
-                    onBlur={filterHandle}
-                  />
+                  <CInputGroup>
+                    <CInputGroupText className="secondary">62</CInputGroupText>
+                    <CFormInput
+                      type="number"
+                      placeholder="856999888"
+                      value={phoneFilter}
+                      onChange={(e) => {
+                        setPhoneFilter(e.target.value);
+                      }}
+                      onBlur={filterHandle}
+                    />
+                  </CInputGroup>
                 </CCol>
               </CRow>
             </CCol>
@@ -273,55 +312,67 @@ export default function Client() {
           Add Client
         </CButton>
         {clientList && (
-          <CTable>
-            <CTableHead>
-              <CTableRow>
-                <CTableHeaderCell scope="col">No.</CTableHeaderCell>
-                <CTableHeaderCell scope="col">Name</CTableHeaderCell>
-                <CTableHeaderCell scope="col">Phone</CTableHeaderCell>
-                <CTableHeaderCell scope="col">Email</CTableHeaderCell>
-                <CTableHeaderCell scope="col">Aksi</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
-            <CTableBody>
-              {clientList.map((el, i) => (
-                <CTableRow key={i}>
-                  <CTableDataCell align="middle">{i + 1}</CTableDataCell>
-                  <CTableDataCell align="middle">{el.name}</CTableDataCell>
-                  <CTableDataCell align="middle">{el.phone}</CTableDataCell>
-                  <CTableDataCell align="middle">{el.email}</CTableDataCell>
-                  <CTableDataCell align="middle">
-                    <CButton
-                      size="sm"
-                      color="info"
-                      onClick={() => {
-                        setClientDetail(el);
-                        setColor(el.color);
-                        setModalActionType('detail');
-                        setShowModalTitle('Detail');
-                        formik.setErrors({});
-                        formik.setValues({ name: el.name, phone: el.phone, email: el.email, color: el.color, password: 'aaa' });
-                      }}
-                    >
-                      Cek Detail
-                    </CButton>
-                    <CButton
-                      size="sm"
-                      color="danger"
-                      className="ms-2 text-white"
-                      onClick={() => {
-                        setClientDetail(el);
-                        setModalActionType('delete');
-                        setShowModalTitle('Delete');
-                      }}
-                    >
-                      Delete
-                    </CButton>
-                  </CTableDataCell>
+          <>
+            <CTable>
+              <CTableHead>
+                <CTableRow>
+                  <CTableHeaderCell scope="col">No.</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">Name</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">Phone</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">Email</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">Aksi</CTableHeaderCell>
                 </CTableRow>
-              ))}
-            </CTableBody>
-          </CTable>
+              </CTableHead>
+              <CTableBody>
+                {clientList.map((el, i) => (
+                  <CTableRow key={i}>
+                    <CTableDataCell align="middle">{i + 1}</CTableDataCell>
+                    <CTableDataCell align="middle">{el.name}</CTableDataCell>
+                    <CTableDataCell align="middle">{el.phone}</CTableDataCell>
+                    <CTableDataCell align="middle">{el.email}</CTableDataCell>
+                    <CTableDataCell align="middle">
+                      <CButton
+                        size="sm"
+                        color="info"
+                        onClick={() => {
+                          setClientDetail(el);
+                          setColor(el.color);
+                          setModalActionType('detail');
+                          setShowModalTitle('Detail');
+                          formik.setErrors({});
+                          formik.setValues({ name: el.name, phone: el.phone.slice(2, el.phone.length), email: el.email, color: el.color, password: 'aaa' });
+                        }}
+                      >
+                        Detail & Update
+                      </CButton>
+                      <CButton
+                        size="sm"
+                        color="danger"
+                        className="ms-2 text-white"
+                        onClick={() => {
+                          setClientDetail(el);
+                          setModalActionType('delete');
+                          setShowModalTitle('Delete');
+                        }}
+                      >
+                        Delete
+                      </CButton>
+                    </CTableDataCell>
+                  </CTableRow>
+                ))}
+              </CTableBody>
+            </CTable>
+            <Pagination
+              setNextPagination={setNextPagination}
+              totalCount={totalCount}
+              count={count}
+              page={page}
+              setPreviousPagination={setPreviousPagination}
+              setPagination={(e) => {
+                setPagination(e);
+              }}
+            />
+          </>
         )}
         <CModal
           backdrop="static"
@@ -354,12 +405,17 @@ export default function Client() {
                     <CRow className="mb-3">
                       <CFormLabel className="col-sm-2 col-form-label">Phone</CFormLabel>
                       <CCol>
-                        <CFormInput
-                          value={formik.values.phone}
-                          onChange={(e) => {
-                            formik.setFieldValue('phone', e.target.value);
-                          }}
-                        />
+                        <CInputGroup>
+                          <CInputGroupText className="secondary">62</CInputGroupText>
+                          <CFormInput
+                            placeholder="856999888"
+                            type="number"
+                            value={formik.values.phone}
+                            onChange={(e) => {
+                              formik.setFieldValue('phone', e.target.value);
+                            }}
+                          />
+                        </CInputGroup>
                       </CCol>
                     </CRow>
                     <CRow className="mb-3">

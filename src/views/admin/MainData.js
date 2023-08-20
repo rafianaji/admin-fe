@@ -7,6 +7,8 @@ import {
   CFormLabel,
   CFormSelect,
   CFormTextarea,
+  CInputGroup,
+  CInputGroupText,
   CModal,
   CModalBody,
   CModalFooter,
@@ -29,6 +31,7 @@ import { getAccountTypeList } from 'src/services/accountType';
 import { getClientList } from 'src/services/client';
 import { getDownlineList } from 'src/services/downline';
 import { getMainDataList, updateMainData } from 'src/services/mainDataApi';
+import Pagination from 'src/shared/components/Pagination';
 import { API_BASE_URL } from 'src/shared/config/config';
 import { dateConvertToDMY } from 'src/shared/helpers/dateHelper';
 
@@ -67,36 +70,49 @@ export default function MainData() {
       setClientId(parseQuery.client_id);
     }
     if (parseQuery.page) {
-      setPage(parseQuery.page);
+      setPage(Number(parseQuery.page));
     }
     if (parseQuery.count) {
       setCount(parseQuery.count);
     }
+    if (!parseQuery.page || !parseQuery.count || parseQuery.page === '0') {
+      parseQuery.page = 1;
+      parseQuery.count = 20;
+      setQuery(queryString.stringify(parseQuery));
+    }
   }, [search]);
 
   const fetchMainData = () => {
-    getMainDataList(search).then((res) => {
-      setMainDataList(res.data.result);
-      setTotalCount(res.data.count);
-    });
+    getMainDataList(search)
+      .then((res) => {
+        setMainDataList(res.data.result);
+        setTotalCount(res.data.count);
+      })
+      .catch(() => {});
   };
 
   const fetchClientList = () => {
-    getClientList().then((res) => {
-      setClientList(res.data);
-    });
+    getClientList()
+      .then((res) => {
+        setClientList(res.data.result);
+      })
+      .catch(() => {});
   };
 
   const fetchDownlineList = () => {
-    getDownlineList().then((res) => {
-      setDownlineList(res.data);
-    });
+    getDownlineList()
+      .then((res) => {
+        setDownlineList(res.data.result);
+      })
+      .catch(() => {});
   };
 
   const fetchAccountTypeList = () => {
-    getAccountTypeList().then((res) => {
-      setAccountTypeList(res.data);
-    });
+    getAccountTypeList()
+      .then((res) => {
+        setAccountTypeList(res.data.result);
+      })
+      .catch(() => {});
   };
 
   const mainDataDetailHandle = (data) => {
@@ -109,12 +125,14 @@ export default function MainData() {
   }, [search]);
 
   const editMainDataStatus = (body) => {
-    updateMainData(mainDataDetail.id, body).then((res) => {
-      fetchMainData();
-      setShowConfirmModal(false);
-      setShowModalDetail(false);
-      setMainDataDetail({});
-    });
+    updateMainData(mainDataDetail.id, body)
+      .then((res) => {
+        fetchMainData();
+        setShowConfirmModal(false);
+        setShowModalDetail(false);
+        setMainDataDetail({});
+      })
+      .catch(() => {});
   };
 
   const changeStatusHandle = (status) => {
@@ -130,10 +148,12 @@ export default function MainData() {
   const updateClient = (clientId) => {
     updateMainData(mainDataDetail.id, {
       client_id: clientId,
-    }).then(() => {
-      fetchMainData();
-      setShowModalClientList(false);
-    });
+    })
+      .then(() => {
+        fetchMainData();
+        setShowModalClientList(false);
+      })
+      .catch(() => {});
   };
 
   const checkToken = async () => {
@@ -150,11 +170,15 @@ export default function MainData() {
     fetchAccountTypeList();
   }, []);
 
-  useEffect(() => {}, []);
-
   const setPreviousPagination = () => {
     const parseQuery = queryString.parse(search);
     parseQuery.page = Number(page) - 1;
+    setQuery(queryString.stringify(parseQuery));
+  };
+
+  const setPagination = (page) => {
+    const parseQuery = queryString.parse(search);
+    parseQuery.page = Number(page);
     setQuery(queryString.stringify(parseQuery));
   };
 
@@ -220,14 +244,17 @@ export default function MainData() {
               <CRow>
                 <CFormLabel className="col-sm-3 col-form-label">No. Handphone</CFormLabel>
                 <CCol>
-                  <CFormInput
-                    type="number"
-                    placeholder="856999888"
-                    onChange={(e) => {
-                      setPhoneNumber(e.target.value);
-                    }}
-                    onBlur={filterHandle}
-                  />
+                  <CInputGroup>
+                    <CInputGroupText className="secondary">62</CInputGroupText>
+                    <CFormInput
+                      type="number"
+                      placeholder="856999888"
+                      onChange={(e) => {
+                        setPhoneNumber(e.target.value);
+                      }}
+                      onBlur={filterHandle}
+                    />
+                  </CInputGroup>
                 </CCol>
               </CRow>
             </CCol>
@@ -323,7 +350,6 @@ export default function MainData() {
           </CRow>
         </CForm>
       </CContainer>
-      {/* </CContainer> */}
       <CTable>
         <CTableHead>
           <CTableRow>
@@ -340,197 +366,117 @@ export default function MainData() {
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          {mainDataList.map((el, i) => (
-            <CTableRow key={i}>
-              <CTableDataCell
-                style={
-                  el.client_id
-                    ? {
-                        backgroundColor: el.client_id.color,
-                      }
-                    : {}
+          {mainDataList.map((el, i) => {
+            const styleTableDataCell = el.client_id
+              ? {
+                  backgroundColor: el.client_id.color,
                 }
-                scope="row"
-              >
-                {i + 1}
-              </CTableDataCell>
-              <CTableDataCell
-                style={
-                  el.client_id
-                    ? {
-                        backgroundColor: el.client_id.color,
-                      }
-                    : {}
-                }
-                align="middle"
-              >
-                {el.downline_id.name}
-              </CTableDataCell>
-              <CTableDataCell
-                style={
-                  el.client_id
-                    ? {
-                        backgroundColor: el.client_id.color,
-                      }
-                    : {}
-                }
-                align="middle"
-              >
-                {el.account_type_id.name}
-              </CTableDataCell>
-              <CTableDataCell
-                style={
-                  el.client_id
-                    ? {
-                        backgroundColor: el.client_id.color,
-                      }
-                    : {}
-                }
-                align="middle"
-              >
-                {el.phone_number}
-              </CTableDataCell>
-              <CTableDataCell
-                style={
-                  el.client_id
-                    ? {
-                        backgroundColor: el.client_id.color,
-                      }
-                    : {}
-                }
-                align="middle"
-              >
-                {el.ktp_number}
-              </CTableDataCell>
-              <CTableDataCell
-                style={
-                  el.client_id
-                    ? {
-                        backgroundColor: el.client_id.color,
-                      }
-                    : {}
-                }
-                align="middle"
-              >
-                {dateConvertToDMY(el.created_at)}
-              </CTableDataCell>
-              <CTableDataCell
-                style={
-                  el.client_id
-                    ? {
-                        backgroundColor: el.client_id.color,
-                      }
-                    : {}
-                }
-                align="middle"
-              >
-                {el.client_id ? el.client_id.name : '-'}
-              </CTableDataCell>
-              <CTableDataCell
-                style={
-                  el.client_id
-                    ? {
-                        backgroundColor: el.client_id.color,
-                      }
-                    : {}
-                }
-                align="middle"
-              >
-                {el.is_downline_paid ? (
-                  <span className="badge text-bg-success rounded-pill px-2">Sudah</span>
-                ) : (
-                  <span className="badge text-bg-danger text-white rounded-pill px-2">Belum</span>
-                )}
-              </CTableDataCell>
-              <CTableDataCell
-                style={
-                  el.client_id
-                    ? {
-                        backgroundColor: el.client_id.color,
-                      }
-                    : {}
-                }
-                align="middle"
-              >
-                <span
-                  className={`text-capitalize ${el.status.toLowerCase() === 'waiting' && 'badge text-bg-warning rounded-pill px-2'} ${
-                    el.status.toLowerCase() === 'reject' && 'badge text-bg-danger text-white rounded-pill px-2'
-                  } ${el.status.toLowerCase() === 'approve' && 'badge text-bg-info rounded-pill px-2'} ${
-                    el.status.toLowerCase() === 'settlement' && 'badge text-bg-success rounded-pill px-2'
-                  }`}
-                >
-                  {el.status}
-                </span>
-              </CTableDataCell>
-              <CTableDataCell
-                align="middle"
-                style={
-                  el.client_id
-                    ? {
-                        backgroundColor: el.client_id.color,
-                      }
-                    : {}
-                }
-              >
-                {el.status.toLowerCase() === 'waiting' && (
-                  <CButton
-                    color="warning"
-                    size="sm"
-                    onClick={() => {
-                      mainDataDetailHandle(el);
-                    }}
+              : {};
+            return (
+              <CTableRow key={i}>
+                <CTableDataCell style={styleTableDataCell} scope="row">
+                  {i + 1}
+                </CTableDataCell>
+                <CTableDataCell style={styleTableDataCell} align="middle">
+                  {el.downline_id.name}
+                </CTableDataCell>
+                <CTableDataCell style={styleTableDataCell} align="middle">
+                  {el.account_type_id.name}
+                </CTableDataCell>
+                <CTableDataCell style={styleTableDataCell} align="middle">
+                  {el.phone_number}
+                </CTableDataCell>
+                <CTableDataCell style={styleTableDataCell} align="middle">
+                  {el.ktp_number}
+                </CTableDataCell>
+                <CTableDataCell style={styleTableDataCell} align="middle">
+                  {dateConvertToDMY(el.created_at)}
+                </CTableDataCell>
+                <CTableDataCell style={styleTableDataCell} align="middle">
+                  {el.client_id ? el.client_id.name : '-'}
+                </CTableDataCell>
+                <CTableDataCell style={styleTableDataCell} align="middle">
+                  {el.is_downline_paid ? (
+                    <span className="badge text-bg-success rounded-pill px-2">Sudah</span>
+                  ) : (
+                    <span className="badge text-bg-danger text-white rounded-pill px-2">Belum</span>
+                  )}
+                </CTableDataCell>
+                <CTableDataCell style={styleTableDataCell} align="middle">
+                  <span
+                    className={`text-capitalize ${el.status.toLowerCase() === 'waiting' && 'badge text-bg-warning rounded-pill px-2'} ${
+                      el.status.toLowerCase() === 'reject' && 'badge text-bg-danger text-white rounded-pill px-2'
+                    } ${el.status.toLowerCase() === 'approve' && 'badge text-bg-info rounded-pill px-2'} ${
+                      el.status.toLowerCase() === 'settlement' && 'badge text-bg-success rounded-pill px-2'
+                    }`}
                   >
-                    Verifikasi
-                  </CButton>
-                )}
-                {el.status === 'approve' && !el.client_id && (
-                  <CButton
-                    size="sm"
-                    color="info"
-                    onClick={() => {
-                      chooseClientHandle();
-                      setMainDataDetail(el);
-                    }}
-                  >
-                    Choose Client
-                  </CButton>
-                )}
-                {el.status === 'approve' && el.client_id && (
-                  <CButton
-                    size="sm"
-                    color="success"
-                    onClick={() => {
-                      //   chooseClientHandle();
-                      setMainDataDetail(el);
-                      setShowConfirmModal(true);
-                      setActionStatus('downline_paid');
-                    }}
-                  >
-                    Bayar Downline
-                  </CButton>
-                )}
-              </CTableDataCell>
-            </CTableRow>
-          ))}
+                    {el.status}
+                  </span>
+                </CTableDataCell>
+                <CTableDataCell align="middle" style={styleTableDataCell}>
+                  {el.status.toLowerCase() === 'waiting' && (
+                    <CButton
+                      color="warning"
+                      size="sm"
+                      onClick={() => {
+                        mainDataDetailHandle(el);
+                      }}
+                    >
+                      Verifikasi
+                    </CButton>
+                  )}
+                  {el.status === 'approve' && !el.client_id && (
+                    <CButton
+                      size="sm"
+                      color="secondary text-white"
+                      onClick={() => {
+                        chooseClientHandle();
+                        setMainDataDetail(el);
+                      }}
+                    >
+                      Choose Client
+                    </CButton>
+                  )}
+                  {el.status === 'approve' && el.client_id && (
+                    <CButton
+                      size="sm"
+                      color="success"
+                      onClick={() => {
+                        setMainDataDetail(el);
+                        setShowConfirmModal(true);
+                        setActionStatus('downline_paid');
+                      }}
+                    >
+                      Bayar Downline
+                    </CButton>
+                  )}
+                  {el.status.toLowerCase() === 'settlement' && (
+                    <CButton
+                      color="info"
+                      size="sm"
+                      onClick={() => {
+                        mainDataDetailHandle(el);
+                      }}
+                    >
+                      Detail
+                    </CButton>
+                  )}
+                </CTableDataCell>
+              </CTableRow>
+            );
+          })}
         </CTableBody>
       </CTable>
-      <CPagination align="end" size="sm" className="mt-3">
-        <CPaginationItem
-          onClick={() => {
-            setPreviousPagination();
-          }}
-        >
-          Previous
-        </CPaginationItem>
-        <CPaginationItem className="active">{page}</CPaginationItem>
-        <CPaginationItem
-          onClick={() => {
-            setNextPagination();
-          }}
-        >
-          Next
-        </CPaginationItem>
-      </CPagination>
+      <Pagination
+        setNextPagination={setNextPagination}
+        totalCount={totalCount}
+        count={count}
+        page={page}
+        setPreviousPagination={setPreviousPagination}
+        setPagination={(e) => {
+          setPagination(e);
+        }}
+      />
       <CModal size="lg" backdrop="static" visible={showModalDetail} onClose={() => setShowModalDetail(false)}>
         <CModalHeader>
           <CModalTitle>Main Data Detail</CModalTitle>
@@ -745,24 +691,26 @@ export default function MainData() {
             )}
           </div>
         </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="danger text-white"
-            onClick={() => {
-              changeStatusHandle('reject');
-            }}
-          >
-            Reject
-          </CButton>
-          <CButton
-            color="success text-white"
-            onClick={() => {
-              changeStatusHandle('approve');
-            }}
-          >
-            Approve
-          </CButton>
-        </CModalFooter>
+        {mainDataDetail.status === 'waiting' && (
+          <CModalFooter>
+            <CButton
+              color="danger text-white"
+              onClick={() => {
+                changeStatusHandle('reject');
+              }}
+            >
+              Reject
+            </CButton>
+            <CButton
+              color="success text-white"
+              onClick={() => {
+                changeStatusHandle('approve');
+              }}
+            >
+              Approve
+            </CButton>
+          </CModalFooter>
+        )}
       </CModal>
       <CModal
         backdrop="static"
@@ -797,7 +745,9 @@ export default function MainData() {
             onClick={() => {
               setShowConfirmModal(false);
               setRemark('');
-              setShowModalDetail(true);
+              if (actionStatus !== 'downline_paid') {
+                setShowModalDetail(true);
+              }
             }}
           >
             Cancel
@@ -861,7 +811,8 @@ export default function MainData() {
                   <CTableDataCell>{el.email}</CTableDataCell>
                   <CTableDataCell>
                     <CButton
-                      color="info"
+                      size="sm"
+                      color="secondary text-white"
                       onClick={() => {
                         updateClient(el.id);
                       }}
@@ -876,10 +827,10 @@ export default function MainData() {
         </CModalBody>
       </CModal>
       {assetName && (
-        <div className="backdrop-asset-container">
+        <div className="backdrop-container">
           {assetName[0] === 'I' && <img src={`${API_BASE_URL}/main-data/asset/${assetName}`} style={{ height: '80%' }} />}
           <div
-            className="backdrop-asset-bg"
+            className="backdrop-bg"
             onClick={() => {
               setAssetName('');
             }}

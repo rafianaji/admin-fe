@@ -26,6 +26,7 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 import queryString from 'query-string';
 import { getAccountTypeList } from 'src/services/accountType';
 import { API_BASE_URL } from 'src/shared/config/config';
+import Pagination from 'src/shared/components/Pagination';
 
 export default function MainData() {
   const [mainDataList, setMainDataList] = useState([]);
@@ -34,25 +35,29 @@ export default function MainData() {
   const [mainDataDetail, setMainDataDetail] = useState({});
   const { search } = useLocation();
   const [, setQuery] = useSearchParams('');
-  const [page, setPage] = useState(0);
-  const [count, setCount] = useState(20);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [ktpNumber, setKtpNumber] = useState('');
-  const [downlineId, setDownlineId] = useState(0);
   const [accountTypeId, setAccountTypeId] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
   const [accountTypeList, setAccountTypeList] = useState([]);
   const [assetName, setAssetName] = useState('');
+  const [page, setPage] = useState(0);
+  const [count, setCount] = useState(20);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     const parseQuery = queryString.parse(search);
     if (parseQuery.account_type_id) {
       setAccountTypeId(parseQuery.account_type_id);
     }
-    if (parseQuery.client_id) {
-      setClientId(parseQuery.client_id);
+    if (parseQuery.page) {
+      setPage(Number(parseQuery.page));
     }
-    if (parseQuery.skip || parseQuery.take) {
+    if (parseQuery.count) {
+      setCount(parseQuery.count);
+    }
+    if (!parseQuery.page || !parseQuery.count || parseQuery.page === '0') {
+      parseQuery.page = 1;
+      parseQuery.count = 20;
       setQuery(queryString.stringify(parseQuery));
     }
   }, [search]);
@@ -65,12 +70,13 @@ export default function MainData() {
   const fetchMainDataList = () => {
     getMainDataList(`?client_id=${clientId}&${search.slice(1, search.length)}`).then((res) => {
       setMainDataList(res.data.result);
+      setTotalCount(res.data.count);
     });
   };
 
   const fetchAccountTypeList = () => {
     getAccountTypeList().then((res) => {
-      setAccountTypeList(res.data);
+      setAccountTypeList(res.data.result);
     });
   };
 
@@ -97,6 +103,24 @@ export default function MainData() {
   useEffect(() => {
     fetchAccountTypeList();
   }, []);
+
+  const setPreviousPagination = () => {
+    const parseQuery = queryString.parse(search);
+    parseQuery.page = Number(page) - 1;
+    setQuery(queryString.stringify(parseQuery));
+  };
+
+  const setPagination = (page) => {
+    const parseQuery = queryString.parse(search);
+    parseQuery.page = Number(page);
+    setQuery(queryString.stringify(parseQuery));
+  };
+
+  const setNextPagination = () => {
+    const parseQuery = queryString.parse(search);
+    parseQuery.page = Number(page) + 1;
+    setQuery(queryString.stringify(parseQuery));
+  };
 
   const filterHandle = () => {
     const parseQuery = queryString.parse(search);
@@ -223,6 +247,16 @@ export default function MainData() {
           ))}
         </CTableBody>
       </CTable>
+      <Pagination
+        setNextPagination={setNextPagination}
+        totalCount={totalCount}
+        count={count}
+        page={page}
+        setPreviousPagination={setPreviousPagination}
+        setPagination={(e) => {
+          setPagination(e);
+        }}
+      />
       <CModal size="lg" backdrop="static" visible={showModalDetail} onClose={() => setShowModalDetail(false)}>
         <CModalHeader>
           <CModalTitle>Main Data Detail</CModalTitle>
@@ -439,10 +473,10 @@ export default function MainData() {
         </CModalBody>
       </CModal>
       {assetName && (
-        <div className="backdrop-asset-container">
+        <div className="backdrop-container">
           {assetName[0] === 'I' && <img src={`${API_BASE_URL}/main-data/asset/${assetName}`} style={{ height: '80%' }} />}
           <div
-            className="backdrop-asset-bg"
+            className="backdrop-bg"
             onClick={() => {
               setAssetName('');
             }}
