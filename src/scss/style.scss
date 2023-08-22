@@ -63,6 +63,10 @@ $enable-rtl: true;
   animation: spin 1s linear infinite;
 }
 
+#loader-spinner {
+  display: none !important;
+}
+
 @-webkit-keyframes spin {
   0% {
     -webkit-transform: rotate(0deg);

@@ -18,17 +18,23 @@ import {
   CTableDataCell,
   CTableHead,
   CTableHeaderCell,
-  CTableRow,
+  CTableRow
 } from '@coreui/react';
 import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { toast } from 'react-hot-toast';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { createDownline, deleteDownline, getDownlineList, updateDownline } from 'src/services/downline';
+import {
+  createDownline,
+  deleteDownline,
+  getDownlineList,
+  updateDownline
+} from 'src/services/downline';
 import * as yup from 'yup';
 import queryString from 'query-string';
 import Pagination from 'src/shared/components/Pagination';
+import { BASE_URL } from 'src/shared/config/config';
 
 export default function Downline() {
   const [downlineList, setDownlineList] = useState([]);
@@ -53,14 +59,14 @@ export default function Downline() {
       .min(8, 'Phone number must be valid and contain 8 - 13 digits')
       .max(13, 'Phone number must be valid and contain 8 - 13 digits')
       .required('Phone number required'),
-    email: yup.string().email().required('Email is required'),
+    email: yup.string().email().required('Email is required')
   });
 
   const formik = useFormik({
     initialValues: {
       name: '',
       phone: '',
-      email: '',
+      email: ''
     },
     validationSchema: schema,
     onSubmit: () => {
@@ -69,7 +75,7 @@ export default function Downline() {
       } else if (modalActionType === 'detail') {
         editDownline();
       }
-    },
+    }
   });
 
   const formValidation = () => {
@@ -230,7 +236,9 @@ export default function Downline() {
           <CRow className="mb-3">
             <CCol>
               <CRow>
-                <CFormLabel className="col-sm-3 col-form-label">Name</CFormLabel>
+                <CFormLabel className="col-sm-3 col-form-label">
+                  Name
+                </CFormLabel>
                 <CCol>
                   <CFormInput
                     type="text"
@@ -246,7 +254,9 @@ export default function Downline() {
             </CCol>
             <CCol>
               <CRow>
-                <CFormLabel className="col-sm-3 col-form-label">Email</CFormLabel>
+                <CFormLabel className="col-sm-3 col-form-label">
+                  Email
+                </CFormLabel>
                 <CCol>
                   <CFormInput
                     type="email"
@@ -264,7 +274,9 @@ export default function Downline() {
           <CRow className="mb-3">
             <CCol>
               <CRow>
-                <CFormLabel className="col-sm-3 col-form-label">Phone</CFormLabel>
+                <CFormLabel className="col-sm-3 col-form-label">
+                  Phone
+                </CFormLabel>
                 <CCol>
                   <CInputGroup>
                     <CInputGroupText className="secondary">62</CInputGroupText>
@@ -282,7 +294,11 @@ export default function Downline() {
               </CRow>
             </CCol>
             <CCol>
-              <CButton className="col-sm-12" color="info" onClick={filterHandle}>
+              <CButton
+                className="col-sm-12"
+                color="info"
+                onClick={filterHandle}
+              >
                 Cari
               </CButton>
             </CCol>
@@ -300,7 +316,7 @@ export default function Downline() {
             formik.setValues({
               name: '',
               phone: '',
-              email: '',
+              email: ''
             });
           }}
           className="mb-3"
@@ -328,14 +344,19 @@ export default function Downline() {
                     <CTableDataCell align="middle">{el.email}</CTableDataCell>
                     <CTableDataCell align="middle">
                       <CopyToClipboard
-                        text={`https://localhost:3000?downline_code=${el.code}`}
+                        text={`${BASE_URL}?downline_code=${el.code}`}
                         onCopy={() => {
                           {
                             toast.success('Coppied');
                           }
                         }}
                       >
-                        <CButton size="sm" color="info" className="ms-2" onClick={() => {}}>
+                        <CButton
+                          size="sm"
+                          color="info"
+                          className="ms-2"
+                          onClick={() => {}}
+                        >
                           Copy Link
                         </CButton>
                       </CopyToClipboard>
@@ -344,7 +365,7 @@ export default function Downline() {
                         color="success"
                         className="ms-2"
                         onClick={() => {
-                          window.location.href = `https://wa.me/${el.phone}?text=Ini URL kamu, silahkan klik atau copy dan paste https://localhost:3000?downline_code=${el.code}`;
+                          window.location.href = `https://wa.me/${el.phone}?text=Ini URL kamu, silahkan klik atau copy dan paste ${BASE_URL}?downline_code=${el.code}`;
                         }}
                       >
                         Chat WA
@@ -358,7 +379,11 @@ export default function Downline() {
                           setModalActionType('detail');
                           setShowModalTitle('Detail');
                           formik.setErrors({});
-                          formik.setValues({ name: el.name, phone: el.phone.slice(2, el.phone.length), email: el.email });
+                          formik.setValues({
+                            name: el.name,
+                            phone: el.phone.slice(2, el.phone.length),
+                            email: el.email
+                          });
                         }}
                       >
                         Detail & Update
@@ -411,7 +436,9 @@ export default function Downline() {
                   <CRow>
                     <CCol>
                       <CRow>
-                        <CFormLabel className="col-sm-2 col-form-label">Code</CFormLabel>
+                        <CFormLabel className="col-sm-2 col-form-label">
+                          Code
+                        </CFormLabel>
                         <CCol>
                           <CInputGroup className="mb-3">
                             <CFormInput disabled value={downlineDetail.code} />
@@ -423,7 +450,11 @@ export default function Downline() {
                                 }
                               }}
                             >
-                              <CButton type="button" color="info" variant="outline">
+                              <CButton
+                                type="button"
+                                color="info"
+                                variant="outline"
+                              >
                                 Copy
                               </CButton>
                             </CopyToClipboard>
@@ -432,7 +463,9 @@ export default function Downline() {
                       </CRow>
                     </CCol>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Name</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Name
+                      </CFormLabel>
                       <CCol>
                         <CFormInput
                           value={formik.values.name}
@@ -440,14 +473,20 @@ export default function Downline() {
                             formik.setFieldValue('name', e.target.value);
                           }}
                         />
-                        <div className="text-danger text-sm">{errorForm.name}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.name}
+                        </div>
                       </CCol>
                     </CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Phone</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Phone
+                      </CFormLabel>
                       <CCol>
                         <CInputGroup>
-                          <CInputGroupText className="secondary">62</CInputGroupText>
+                          <CInputGroupText className="secondary">
+                            62
+                          </CInputGroupText>
                           <CFormInput
                             placeholder="856999888"
                             type="number"
@@ -457,11 +496,15 @@ export default function Downline() {
                             }}
                           />
                         </CInputGroup>
-                        <div className="text-danger text-sm">{errorForm.phone}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.phone}
+                        </div>
                       </CCol>
                     </CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Email</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Email
+                      </CFormLabel>
                       <CCol>
                         <CFormInput
                           value={formik.values.email}
@@ -469,7 +512,9 @@ export default function Downline() {
                             formik.setFieldValue('email', e.target.value);
                           }}
                         />
-                        <div className="text-danger text-sm">{errorForm.email}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.email}
+                        </div>
                       </CCol>
                     </CRow>
                   </CRow>
@@ -486,7 +531,9 @@ export default function Downline() {
                 >
                   <CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Name</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Name
+                      </CFormLabel>
                       <CCol>
                         <CFormInput
                           key="name"
@@ -497,14 +544,20 @@ export default function Downline() {
                             formik.setFieldValue('name', e.target.value);
                           }}
                         />
-                        <div className="text-danger text-sm">{errorForm.name}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.name}
+                        </div>
                       </CCol>
                     </CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Phone</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Phone
+                      </CFormLabel>
                       <CCol>
                         <CInputGroup>
-                          <CInputGroupText className="secondary">62</CInputGroupText>
+                          <CInputGroupText className="secondary">
+                            62
+                          </CInputGroupText>
                           <CFormInput
                             placeholder="856999888"
                             type="number"
@@ -515,11 +568,15 @@ export default function Downline() {
                             }}
                           />
                         </CInputGroup>
-                        <div className="text-danger text-sm">{errorForm.phone}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.phone}
+                        </div>
                       </CCol>
                     </CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Email</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Email
+                      </CFormLabel>
                       <CCol>
                         <CFormInput
                           placeholder="johndoe@mail.com"
@@ -529,7 +586,9 @@ export default function Downline() {
                             formik.setFieldValue('email', e.target.value);
                           }}
                         />
-                        <div className="text-danger text-sm">{errorForm.email}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.email}
+                        </div>
                       </CCol>
                     </CRow>
                   </CRow>

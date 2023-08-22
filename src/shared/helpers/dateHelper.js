@@ -11,7 +11,7 @@ export function dateConvertToDMY(date) {
     'September',
     'Oktober',
     'November',
-    'Desember',
+    'Desember'
   ];
   const dateConvert = new Date(date);
   const mm = dateConvert.getMonth();

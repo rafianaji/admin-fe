@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { API_BASE_URL } from 'src/shared/config/config';
 
 const axiosSetup = axios.create({
-  baseURL: 'http://localhost:4500',
+  baseURL: API_BASE_URL
 });
 
 axiosSetup.interceptors.request.use((req) => {
@@ -34,7 +35,7 @@ axiosSetup.interceptors.response.use(
       toast.error(err.message);
     }
     throw err;
-  },
+  }
 );
 
 export default axiosSetup;
