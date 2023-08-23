@@ -347,7 +347,7 @@ export default function Downline() {
                         text={`${BASE_URL}?downline_code=${el.code}`}
                         onCopy={() => {
                           {
-                            toast.success('Coppied');
+                            toast.success('Copied');
                           }
                         }}
                       >
@@ -446,7 +446,7 @@ export default function Downline() {
                               text={downlineDetail.code}
                               onCopy={() => {
                                 {
-                                  toast.success('Coppied');
+                                  toast.success('Copied');
                                 }
                               }}
                             >

@@ -14,7 +14,7 @@ import {
   CModalFooter,
   CModalHeader,
   CModalTitle,
-  CRow,
+  CRow
 } from '@coreui/react';
 import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react';
@@ -64,8 +64,16 @@ export default function Form() {
         .required('Phone Number is required')
         .min(8, 'Phone number must be valid and contain 8 - 13 digits')
         .max(13, 'Phone number must be valid and contain 8 - 13 digits'),
-      ktp_number: yup.string().required('KTP is required').min(16, 'Min and Max is 16 digits').max(16, 'Min and Max is 16 digits'),
-      kk_number: yup.string().required('KK is required').min(16, 'Min and Max is 16 digits').max(16, 'Min and Max is 16 digits'),
+      ktp_number: yup
+        .string()
+        .required('KTP is required')
+        .min(16, 'Min and Max is 16 digits')
+        .max(16, 'Min and Max is 16 digits'),
+      kk_number: yup
+        .string()
+        .required('KK is required')
+        .min(16, 'Min and Max is 16 digits')
+        .max(16, 'Min and Max is 16 digits'),
       mother_name: yup.string().required('Mother Name is required'),
       full_ktp_address: yup.string().required('KTP Address is required'),
       bank_branch: yup.string().required('Bank branch is required'),
@@ -78,10 +86,14 @@ export default function Form() {
       pin: yup.string().required('PIN is required'),
       username_acct: yup.string().required('Username Acct is required'),
       password_acct: yup.string().required('Password Acct is required'),
-      transaction_password_acct: yup.string().required('Transaction Password is required'),
+      transaction_password_acct: yup
+        .string()
+        .required('Transaction Password is required'),
       username_ibanking: yup.string().required('Username Ibanking is required'),
       password_ibanking: yup.string().required('Password Ibanking is required'),
-      pin_token_ibanking: yup.string().required('Pin Token Ibanking is required'),
+      pin_token_ibanking: yup
+        .string()
+        .required('Pin Token Ibanking is required')
     });
   } else {
     schema = yup.object().shape({
@@ -90,13 +102,20 @@ export default function Form() {
       name: yup.string().required('Name is required'),
       account_type_id: yup.string().required('Account Type is required'),
       phone_number: yup.string().required('Phone Number is required'),
-      ktp_number: yup.string().required('KTP is required').min(16, 'Min and Max is 16 digits').max(16, 'Min and Max is 16 digits'),
-      kk_number: yup.string().required('KK is required').min(16, 'Min and Max is 16 digits').max(16, 'Min and Max is 16 digits'),
+      ktp_number: yup
+        .string()
+        .required('KTP is required')
+        .min(16, 'Min and Max is 16 digits')
+        .max(16, 'Min and Max is 16 digits'),
+      kk_number: yup
+        .string()
+        .required('KK is required')
+        .min(16, 'Min and Max is 16 digits')
+        .max(16, 'Min and Max is 16 digits'),
       mother_name: yup.string().required('Mother Name is required'),
-      full_ktp_address: yup.string().required('KTP Address is required'),
       email: yup.string().required('Email is required'),
       email_password: yup.string().required('Email Password is required'),
-      pin: yup.string().required('PIN is required'),
+      pin: yup.string().required('PIN is required')
     });
   }
 
@@ -127,12 +146,12 @@ export default function Form() {
       selfie_photo_url: {},
       video_verification_url: {},
       active_period: '',
-      remark: '',
+      remark: ''
     },
     validationSchema: schema,
     onSubmit: () => {
       submitMainData();
-    },
+    }
   });
 
   useEffect(() => {
@@ -196,7 +215,7 @@ export default function Form() {
       selfie_photo_url: formik.values.selfie_photo_url,
       video_verification_url: formik.values.video_verification_url,
       active_period: activePeriod,
-      remark,
+      remark
     };
 
     let isError = false;
@@ -240,14 +259,18 @@ export default function Form() {
     <>
       {showForm ? (
         <div style={{ background: '#eef7ff' }} className="py-3">
-          <CContainer style={{ width: '480px', background: 'white', borderRadius: '1em' }}>
+          <CContainer
+            style={{ width: '480px', background: 'white', borderRadius: '1em' }}
+          >
             <div className="row justify-content-center">
               <CCol>
                 <h4 className="text-center mt-4">DNA Form</h4>
                 <CRow className="mt-4">
                   <CCol
                     style={{ borderRadius: 0 }}
-                    className={`text-center p-3 border border-secondary border-start-0 ${walletType === 'rekening' ? 'btn btn-info border-0' : ''}`}
+                    className={`text-center p-3 border border-secondary border-start-0 ${
+                      walletType === 'rekening' ? 'btn btn-info border-0' : ''
+                    }`}
                     onClick={() => {
                       walletTypeHandle('rekening');
                       formik.setFieldValue('account_type_id', '');
@@ -273,13 +296,16 @@ export default function Form() {
                 <CRow className="p-4">
                   <CForm>
                     <div className="mb-3">
-                      <CFormLabel>Account Type</CFormLabel>
+                      <CFormLabel>Akun Tipe</CFormLabel>
                       <CFormSelect
                         onChange={(e) => {
-                          formik.setFieldValue('account_type_id', e.target.value);
+                          formik.setFieldValue(
+                            'account_type_id',
+                            e.target.value
+                          );
                         }}
                       >
-                        <option defaultChecked>Account Type</option>
+                        <option defaultChecked>Akun Tipe</option>
                         {accountTypeList.map((el) => {
                           return (
                             <option key={el.id} value={el.id}>
@@ -288,10 +314,12 @@ export default function Form() {
                           );
                         })}
                       </CFormSelect>
-                      <div className="text-danger text-sm">{errorForm.account_type_id}</div>
+                      <div className="text-danger text-sm">
+                        {errorForm.account_type_id}
+                      </div>
                     </div>
                     <div className="mb-3">
-                      <CFormLabel>Name</CFormLabel>
+                      <CFormLabel>Nama</CFormLabel>
                       <CFormInput
                         placeholder="Sumiyati"
                         required
@@ -299,26 +327,35 @@ export default function Form() {
                           formik.setFieldValue('name', e.target.value);
                         }}
                       />
-                      <div className="text-danger text-sm">{errorForm.name}</div>
+                      <div className="text-danger text-sm">
+                        {errorForm.name}
+                      </div>
                     </div>
                     <div className="mb-3">
-                      <CFormLabel>Phone Number</CFormLabel>
+                      <CFormLabel>Nomor Hp</CFormLabel>
                       <CInputGroup>
-                        <CInputGroupText className="bg-info">62</CInputGroupText>
+                        {/* <CInputGroupText className="bg-info">
+                          62
+                        </CInputGroupText> */}
                         <CFormInput
-                          placeholder="856999888"
+                          placeholder="62856999888"
                           type="number"
                           required
                           onChange={(e) => {
-                            formik.setFieldValue('phone_number', e.target.value);
+                            formik.setFieldValue(
+                              'phone_number',
+                              e.target.value
+                            );
                           }}
                         />
                       </CInputGroup>
-                      <div className="text-danger text-sm">{errorForm.phone_number}</div>
+                      <div className="text-danger text-sm">
+                        {errorForm.phone_number}
+                      </div>
                     </div>
                     <div className="d-flex">
                       <div className="mb-3 pe-2">
-                        <CFormLabel>KTP Number</CFormLabel>
+                        <CFormLabel>Nomor KTP</CFormLabel>
                         <CFormInput
                           placeholder="20101234567890123"
                           type="number"
@@ -328,10 +365,12 @@ export default function Form() {
                           }}
                           max={16}
                         />
-                        <div className="text-danger text-sm">{errorForm.ktp_number}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.ktp_number}
+                        </div>
                       </div>
                       <div className="mb-3 ps-2">
-                        <CFormLabel>KK Number</CFormLabel>
+                        <CFormLabel>Nomor KK</CFormLabel>
                         <CFormInput
                           placeholder="20101234567890123"
                           type="number"
@@ -340,11 +379,13 @@ export default function Form() {
                             formik.setFieldValue('kk_number', e.target.value);
                           }}
                         />
-                        <div className="text-danger text-sm">{errorForm.kk_number}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.kk_number}
+                        </div>
                       </div>
                     </div>
                     <div className="mb-3">
-                      <CFormLabel>Mother Name</CFormLabel>
+                      <CFormLabel>Nama Ibu</CFormLabel>
                       <CFormInput
                         placeholder="Madonna"
                         type="text"
@@ -353,23 +394,32 @@ export default function Form() {
                           formik.setFieldValue('mother_name', e.target.value);
                         }}
                       />
-                      <div className="text-danger text-sm">{errorForm.mother_name}</div>
-                    </div>
-                    <div className="mb-3">
-                      <CFormLabel>Full KTP Address</CFormLabel>
-                      <CFormTextarea
-                        placeholder="Jl. Pisang Raya No. 12 Jakarta Barat 002/003"
-                        type="text"
-                        required
-                        onChange={(e) => {
-                          formik.setFieldValue('full_ktp_address', e.target.value);
-                        }}
-                      />
-                      <div className="text-danger text-sm">{errorForm.full_ktp_address}</div>
+                      <div className="text-danger text-sm">
+                        {errorForm.mother_name}
+                      </div>
                     </div>
                     {walletType == 'rekening' && (
                       <div className="mb-3">
-                        <CFormLabel>Bank Branch</CFormLabel>
+                        <CFormLabel>Alamat KTP</CFormLabel>
+                        <CFormTextarea
+                          placeholder="Jl. Pisang Raya No. 12 Jakarta Barat 002/003"
+                          type="text"
+                          required
+                          onChange={(e) => {
+                            formik.setFieldValue(
+                              'full_ktp_address',
+                              e.target.value
+                            );
+                          }}
+                        />
+                        <div className="text-danger text-sm">
+                          {errorForm.full_ktp_address}
+                        </div>
+                      </div>
+                    )}
+                    {walletType == 'rekening' && (
+                      <div className="mb-3">
+                        <CFormLabel>Bank Cabang</CFormLabel>
                         <CFormInput
                           placeholder="Kab. Tangerang"
                           type="text"
@@ -378,7 +428,9 @@ export default function Form() {
                             formik.setFieldValue('bank_branch', e.target.value);
                           }}
                         />
-                        <div className="text-danger text-sm">{errorForm.bank_branch}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.bank_branch}
+                        </div>
                       </div>
                     )}
                     <div className="d-flex">
@@ -392,80 +444,105 @@ export default function Form() {
                             formik.setFieldValue('email', e.target.value);
                           }}
                         />
-                        <div className="text-danger text-sm">{errorForm.email}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.email}
+                        </div>
                       </div>
                       <div className="mb-3 ps-2">
-                        <CFormLabel>Email Password</CFormLabel>
+                        <CFormLabel>Kata Sandi Email</CFormLabel>
                         <CFormInput
-                          placeholder="Email Password"
+                          placeholder="Kata Sandi Email"
                           type="text"
                           required
                           onChange={(e) => {
-                            formik.setFieldValue('email_password', e.target.value);
+                            formik.setFieldValue(
+                              'email_password',
+                              e.target.value
+                            );
                           }}
                         />
-                        <div className="text-danger text-sm">{errorForm.email_password}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.email_password}
+                        </div>
                       </div>
                     </div>
                     {walletType == 'rekening' && (
                       <div className="d-flex">
                         <div className="mb-3 pe-2">
-                          <CFormLabel>Card Number</CFormLabel>
+                          <CFormLabel>Nomor Kartu</CFormLabel>
                           <CFormInput
                             value={ccNumber(formik.values.card_number)}
                             placeholder="1234 1234 1234 1234"
                             type="text"
                             onChange={(e) => {
-                              formik.setFieldValue('card_number', e.target.value);
+                              formik.setFieldValue(
+                                'card_number',
+                                e.target.value
+                              );
                             }}
                             required
                           />
-                          <div className="text-danger text-sm">{errorForm.card_number}</div>
+                          <div className="text-danger text-sm">
+                            {errorForm.card_number}
+                          </div>
                         </div>
                         <div className="mb-3 ps-2">
-                          <CFormLabel>Exp Date</CFormLabel>
+                          <CFormLabel>Tanggal Kadaluarsa</CFormLabel>
                           <CFormInput
                             placeholder="12/26"
+                            maxLength={5}
                             type="text"
                             required
                             onChange={(e) => {
                               formik.setFieldValue('exp_date', e.target.value);
                             }}
                           />
-                          <div className="text-danger text-sm">{errorForm.exp_date}</div>
+                          <div className="text-danger text-sm">
+                            {errorForm.exp_date}
+                          </div>
                         </div>
                       </div>
                     )}
                     {walletType == 'rekening' && (
                       <div className="d-flex">
                         <div className="mb-3 pe-2">
-                          <CFormLabel>Access Code</CFormLabel>
+                          <CFormLabel>Akses Kode</CFormLabel>
                           <CFormInput
                             placeholder="sumiyati99"
                             type="text"
                             required
                             onChange={(e) => {
-                              formik.setFieldValue('access_code', e.target.value);
+                              formik.setFieldValue(
+                                'access_code',
+                                e.target.value
+                              );
                             }}
                           />
-                          <div className="text-danger text-sm">{errorForm.access_code}</div>
+                          <div className="text-danger text-sm">
+                            {errorForm.access_code}
+                          </div>
                         </div>
                         <div className="mb-3 ps-2">
-                          <CFormLabel>Mbanking Password</CFormLabel>
+                          <CFormLabel>Kata Sandi Mbanking</CFormLabel>
                           <CFormInput
                             placeholder="sumiyaticantik123"
                             type="text"
                             required
                             onChange={(e) => {
-                              formik.setFieldValue('mbanking_password', e.target.value);
+                              formik.setFieldValue(
+                                'mbanking_password',
+                                e.target.value
+                              );
                             }}
                           />
-                          <div className="text-danger text-sm">{errorForm.mbanking_password}</div>
+                          <div className="text-danger text-sm">
+                            {errorForm.mbanking_password}
+                          </div>
                         </div>
                       </div>
                     )}
                     <div className="mb-3">
-                      <CFormLabel>Pin</CFormLabel>
+                      <CFormLabel>Pin ATM</CFormLabel>
                       <CFormInput
                         placeholder="123456"
                         type="number"
@@ -480,87 +557,122 @@ export default function Form() {
                       <>
                         <div className="d-flex">
                           <div className="mb-3 pe-2">
-                            <CFormLabel>Username Acct</CFormLabel>
+                            <CFormLabel>Nama Pengguna Aplikasi</CFormLabel>
                             <CFormInput
                               placeholder="suminati2023"
                               type="text"
                               required
                               onChange={(e) => {
-                                formik.setFieldValue('username_acct', e.target.value);
+                                formik.setFieldValue(
+                                  'username_acct',
+                                  e.target.value
+                                );
                               }}
                             />
-                            <div className="text-danger text-sm">{errorForm.username_acct}</div>
+                            <div style={{ fontSize: '0.7em' }}>
+                              MyBCA, Livin, Brimo, Dll
+                            </div>
+                            <div className="text-danger text-sm">
+                              {errorForm.username_acct}
+                            </div>
                           </div>
                           <div className="mb-3 ps-2">
-                            <CFormLabel>Password Acct</CFormLabel>
+                            <CFormLabel>Kata Sandi Aplikasi</CFormLabel>
                             <CFormInput
                               placeholder="sumiyati0003"
                               type="text"
                               required
                               onChange={(e) => {
-                                formik.setFieldValue('password_acct', e.target.value);
+                                formik.setFieldValue(
+                                  'password_acct',
+                                  e.target.value
+                                );
                               }}
                             />
-                            <div className="text-danger text-sm">{errorForm.password_acct}</div>
+                            <div className="text-danger text-sm">
+                              {errorForm.password_acct}
+                            </div>
                           </div>
                         </div>
 
                         <div className="mb-3">
-                          <CFormLabel>Transaction Password Acct</CFormLabel>
+                          <CFormLabel>
+                            Kata Sandi Transaksaksi Aplikasi
+                          </CFormLabel>
                           <CFormInput
                             placeholder="sumiatibca2023"
                             type="text"
                             required
                             onChange={(e) => {
-                              formik.setFieldValue('transaction_password_acct', e.target.value);
+                              formik.setFieldValue(
+                                'transaction_password_acct',
+                                e.target.value
+                              );
                             }}
                           />
-                          <div className="text-danger text-sm">{errorForm.transaction_password_acct}</div>
+                          <div className="text-danger text-sm">
+                            {errorForm.transaction_password_acct}
+                          </div>
                         </div>
                         <div className="d-flex">
                           <div className="mb-3 pe-2">
-                            <CFormLabel>Username Ibanking</CFormLabel>
+                            <CFormLabel>Nama Pengguna iBanking</CFormLabel>
                             <CFormInput
                               placeholder="sumsum1902"
                               type="text"
                               required
                               onChange={(e) => {
-                                formik.setFieldValue('username_ibanking', e.target.value);
+                                formik.setFieldValue(
+                                  'username_ibanking',
+                                  e.target.value
+                                );
                               }}
                             />
-                            <div className="text-danger text-sm">{errorForm.username_ibanking}</div>
+                            <div className="text-danger text-sm">
+                              {errorForm.username_ibanking}
+                            </div>
                           </div>
                           <div className="mb-3 ps-2">
-                            <CFormLabel>Password Ibanking</CFormLabel>
+                            <CFormLabel>Kata Sandi iBanking</CFormLabel>
                             <CFormInput
                               placeholder="998899"
                               type="text"
                               required
                               onChange={(e) => {
-                                formik.setFieldValue('password_ibanking', e.target.value);
+                                formik.setFieldValue(
+                                  'password_ibanking',
+                                  e.target.value
+                                );
                               }}
                             />
-                            <div className="text-danger text-sm">{errorForm.password_ibanking}</div>
+                            <div className="text-danger text-sm">
+                              {errorForm.password_ibanking}
+                            </div>
                           </div>
                         </div>
                         <div className="mb-3">
-                          <CFormLabel>Pin Token Ibanking</CFormLabel>
+                          <CFormLabel>Pin Token iBanking</CFormLabel>
                           <CFormInput
                             placeholder="2309293"
                             type="text"
                             required
                             onChange={(e) => {
-                              formik.setFieldValue('pin_token_ibanking', e.target.value);
+                              formik.setFieldValue(
+                                'pin_token_ibanking',
+                                e.target.value
+                              );
                             }}
                           />
-                          <div className="text-danger text-sm">{errorForm.pin_token_ibanking}</div>
+                          <div className="text-danger text-sm">
+                            {errorForm.pin_token_ibanking}
+                          </div>
                         </div>
                       </>
                     )}
                     <div className="mb-3">
-                      <CFormLabel>Active Period</CFormLabel>
+                      <CFormLabel>Masa Aktif</CFormLabel>
                       <CFormInput
-                        placeholder="Active Period"
+                        placeholder="Masa Aktif"
                         type="date"
                         required
                         onChange={(e) => {
@@ -569,7 +681,7 @@ export default function Form() {
                       />
                     </div>
                     <div className="mb-3">
-                      <CFormLabel>Remark</CFormLabel>
+                      <CFormLabel>Tambahan</CFormLabel>
                       <CFormTextarea
                         required
                         onChange={(e) => {
@@ -593,7 +705,9 @@ export default function Form() {
                           >
                             Upload
                           </CButton>
-                          <div className="text-danger text-sm">{errorForm.ktp_photo_url}</div>
+                          <div className="text-danger text-sm">
+                            {errorForm.ktp_photo_url}
+                          </div>
                         </CCol>
                         <CCol>
                           <CFormLabel>Selfie Photo KTP</CFormLabel>
@@ -711,26 +825,47 @@ export default function Form() {
                   </CForm>
                 </CRow>
               </CCol>
-              <CModal backdrop="static" visible={uploadModalVisible} onClose={() => setUploadModalVisible(false)}>
+              <CModal
+                backdrop="static"
+                visible={uploadModalVisible}
+                onClose={() => setUploadModalVisible(false)}
+              >
                 <CModalHeader>
                   <CModalTitle>{uploadModalTitle}</CModalTitle>
                 </CModalHeader>
                 <CModalBody>
-                  {uploadPreview && <img src={URL.createObjectURL(uploadPreview)} width={300} />}
+                  {uploadPreview && (
+                    <img src={URL.createObjectURL(uploadPreview)} width={300} />
+                  )}
                   {uploadPreview && <br />}
                   <input
                     className="mt-3"
                     type="file"
-                    accept={uploadModalType === 'photo_ktp' ? 'image/*' : uploadModalType === 'selfie_photo_ktp' ? 'image/*' : 'video/*'}
+                    accept={
+                      uploadModalType === 'photo_ktp'
+                        ? 'image/*'
+                        : uploadModalType === 'selfie_photo_ktp'
+                        ? 'image/*'
+                        : 'video/*'
+                    }
                     onChange={(e) => {
                       if (uploadModalType === 'photo_ktp') {
-                        formik.setFieldValue('ktp_photo_url', e.currentTarget.files[0]);
+                        formik.setFieldValue(
+                          'ktp_photo_url',
+                          e.currentTarget.files[0]
+                        );
                         setUploadPreview(e.currentTarget.files[0]);
                       } else if (uploadModalType === 'selfie_photo_ktp') {
-                        formik.setFieldValue('selfie_photo_url', e.currentTarget.files[0]);
+                        formik.setFieldValue(
+                          'selfie_photo_url',
+                          e.currentTarget.files[0]
+                        );
                         setUploadPreview(e.currentTarget.files[0]);
                       } else if (uploadModalType === 'video_verification') {
-                        formik.setFieldValue('video_verification_url', e.currentTarget.files[0]);
+                        formik.setFieldValue(
+                          'video_verification_url',
+                          e.currentTarget.files[0]
+                        );
                       }
                     }}
                   />
@@ -751,7 +886,12 @@ export default function Form() {
         </div>
       ) : (
         <div className="d-flex justify-content-center">
-          <img src={NotFoundImage} style={{ width: 'auto', height: '100vh' }} alt="Designed by freepik" title="Designed by freepik" />
+          <img
+            src={NotFoundImage}
+            style={{ width: 'auto', height: '100vh' }}
+            alt="Designed by freepik"
+            title="Designed by freepik"
+          />
         </div>
       )}
     </>

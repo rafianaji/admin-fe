@@ -22,7 +22,7 @@ import {
   CTableDataCell,
   CTableHead,
   CTableHeaderCell,
-  CTableRow,
+  CTableRow
 } from '@coreui/react';
 import queryString from 'query-string';
 import React, { useEffect, useState } from 'react';
@@ -147,7 +147,7 @@ export default function MainData() {
 
   const updateClient = (clientId) => {
     updateMainData(mainDataDetail.id, {
-      client_id: clientId,
+      client_id: clientId
     })
       .then(() => {
         fetchMainData();
@@ -210,7 +210,9 @@ export default function MainData() {
           <CRow className="mb-3">
             <CCol>
               <CRow>
-                <CFormLabel className="col-sm-3 col-form-label">Sumber Akun</CFormLabel>
+                <CFormLabel className="col-sm-3 col-form-label">
+                  Sumber Akun
+                </CFormLabel>
                 <CCol>
                   <CFormSelect
                     className="mb-3"
@@ -242,7 +244,9 @@ export default function MainData() {
             </CCol>
             <CCol>
               <CRow>
-                <CFormLabel className="col-sm-3 col-form-label">No. Handphone</CFormLabel>
+                <CFormLabel className="col-sm-3 col-form-label">
+                  No. Handphone
+                </CFormLabel>
                 <CCol>
                   <CInputGroup>
                     <CInputGroupText className="secondary">62</CInputGroupText>
@@ -262,7 +266,9 @@ export default function MainData() {
           <CRow className="mb-3">
             <CCol>
               <CRow>
-                <CFormLabel className="col-sm-3 col-form-label">Downline</CFormLabel>
+                <CFormLabel className="col-sm-3 col-form-label">
+                  Downline
+                </CFormLabel>
                 <CCol>
                   <CFormSelect
                     className="mb-3"
@@ -312,7 +318,9 @@ export default function MainData() {
           <CRow className="mb-3">
             <CCol>
               <CRow>
-                <CFormLabel className="col-sm-3 col-form-label">Klien</CFormLabel>
+                <CFormLabel className="col-sm-3 col-form-label">
+                  Klien
+                </CFormLabel>
                 <CCol>
                   <CFormSelect
                     className="mb-3"
@@ -343,7 +351,11 @@ export default function MainData() {
               </CRow>
             </CCol>
             <CCol>
-              <CButton className="col-sm-12" color="info" onClick={filterHandle}>
+              <CButton
+                className="col-sm-12"
+                color="info"
+                onClick={filterHandle}
+              >
                 Cari
               </CButton>
             </CCol>
@@ -369,7 +381,7 @@ export default function MainData() {
           {mainDataList.map((el, i) => {
             const styleTableDataCell = el.client_id
               ? {
-                  backgroundColor: el.client_id.color,
+                  backgroundColor: el.client_id.color
                 }
               : {};
             return (
@@ -397,17 +409,29 @@ export default function MainData() {
                 </CTableDataCell>
                 <CTableDataCell style={styleTableDataCell} align="middle">
                   {el.is_downline_paid ? (
-                    <span className="badge text-bg-success rounded-pill px-2">Sudah</span>
+                    <span className="badge text-bg-success rounded-pill px-2">
+                      Sudah
+                    </span>
                   ) : (
-                    <span className="badge text-bg-danger text-white rounded-pill px-2">Belum</span>
+                    <span className="badge text-bg-danger text-white rounded-pill px-2">
+                      Belum
+                    </span>
                   )}
                 </CTableDataCell>
                 <CTableDataCell style={styleTableDataCell} align="middle">
                   <span
-                    className={`text-capitalize ${el.status.toLowerCase() === 'waiting' && 'badge text-bg-warning rounded-pill px-2'} ${
-                      el.status.toLowerCase() === 'reject' && 'badge text-bg-danger text-white rounded-pill px-2'
-                    } ${el.status.toLowerCase() === 'approve' && 'badge text-bg-info rounded-pill px-2'} ${
-                      el.status.toLowerCase() === 'settlement' && 'badge text-bg-success rounded-pill px-2'
+                    className={`text-capitalize ${
+                      el.status.toLowerCase() === 'waiting' &&
+                      'badge text-bg-warning rounded-pill px-2'
+                    } ${
+                      el.status.toLowerCase() === 'reject' &&
+                      'badge text-bg-danger text-white rounded-pill px-2'
+                    } ${
+                      el.status.toLowerCase() === 'approve' &&
+                      'badge text-bg-info rounded-pill px-2'
+                    } ${
+                      el.status.toLowerCase() === 'settlement' &&
+                      'badge text-bg-success rounded-pill px-2'
                     }`}
                   >
                     {el.status}
@@ -450,7 +474,8 @@ export default function MainData() {
                       Bayar Downline
                     </CButton>
                   )}
-                  {el.status.toLowerCase() === 'settlement' && (
+                  {(el.status.toLowerCase() === 'settlement' ||
+                    el.status.toLowerCase() === 'reject') && (
                     <CButton
                       color="info"
                       size="sm"
@@ -477,7 +502,12 @@ export default function MainData() {
           setPagination(e);
         }}
       />
-      <CModal size="lg" backdrop="static" visible={showModalDetail} onClose={() => setShowModalDetail(false)}>
+      <CModal
+        size="lg"
+        backdrop="static"
+        visible={showModalDetail}
+        onClose={() => setShowModalDetail(false)}
+      >
         <CModalHeader>
           <CModalTitle>Main Data Detail</CModalTitle>
         </CModalHeader>
@@ -522,7 +552,11 @@ export default function MainData() {
             </div>
             <div className="my-3 col-4">
               <div className="h6">Active Period</div>
-              <div>{mainDataDetail.active_period ? dateConvertToDMY(mainDataDetail.active_period) : '-'}</div>
+              <div>
+                {mainDataDetail.active_period
+                  ? dateConvertToDMY(mainDataDetail.active_period)
+                  : '-'}
+              </div>
             </div>
             {mainDataDetail.account_type_id?.category === 'rekening' && (
               <>
@@ -600,7 +634,11 @@ export default function MainData() {
             </div>
             <div className="my-3 col-4">
               <div className="h6">Video Verification</div>
-              <video src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.video_verification_url}`} className="col-10" controls />
+              <video
+                src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.video_verification_url}`}
+                className="col-10"
+                controls
+              />
             </div>
           </div>
           <div className="d-flex justify-content-between flex-wrap">
@@ -617,7 +655,11 @@ export default function MainData() {
                   />
                 )}
                 {mainDataDetail.another_file_1_url[0] === 'V' && (
-                  <video src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_1_url}`} className="col-10" controls />
+                  <video
+                    src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_1_url}`}
+                    className="col-10"
+                    controls
+                  />
                 )}
               </div>
             )}
@@ -634,7 +676,11 @@ export default function MainData() {
                   />
                 )}
                 {mainDataDetail.another_file_2_url[0] === 'V' && (
-                  <video src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_2_url}`} className="col-10" controls />
+                  <video
+                    src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_2_url}`}
+                    className="col-10"
+                    controls
+                  />
                 )}
               </div>
             )}
@@ -651,7 +697,11 @@ export default function MainData() {
                   />
                 )}
                 {mainDataDetail.another_file_3_url[0] === 'V' && (
-                  <video src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_3_url}`} className="col-10" controls />
+                  <video
+                    src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_3_url}`}
+                    className="col-10"
+                    controls
+                  />
                 )}
               </div>
             )}
@@ -668,7 +718,11 @@ export default function MainData() {
                   />
                 )}
                 {mainDataDetail.another_file_4_url[0] === 'V' && (
-                  <video src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_4_url}`} className="col-10" controls />
+                  <video
+                    src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_4_url}`}
+                    className="col-10"
+                    controls
+                  />
                 )}
               </div>
             )}
@@ -685,7 +739,11 @@ export default function MainData() {
                   />
                 )}
                 {mainDataDetail.another_file_5_url[0] === 'V' && (
-                  <video src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_5_url}`} className="col-10" controls />
+                  <video
+                    src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_5_url}`}
+                    className="col-10"
+                    controls
+                  />
                 )}
               </div>
             )}
@@ -725,8 +783,14 @@ export default function MainData() {
           <CModalTitle>Warning</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          {actionStatus !== 'downline_paid' && <h4 className="mb-3">Are you sure?</h4>}
-          {actionStatus == 'downline_paid' && <p className="mb-3">Apakah anda ingin membayar {mainDataDetail?.downline_id?.name}?</p>}
+          {actionStatus !== 'downline_paid' && (
+            <h4 className="mb-3">Are you sure?</h4>
+          )}
+          {actionStatus == 'downline_paid' && (
+            <p className="mb-3">
+              Apakah anda ingin membayar {mainDataDetail?.downline_id?.name}?
+            </p>
+          )}
           {actionStatus == 'reject' && (
             <div>
               <CFormLabel>Remark</CFormLabel>
@@ -757,11 +821,11 @@ export default function MainData() {
             onClick={() => {
               if (actionStatus == 'approve') {
                 editMainDataStatus({
-                  status: 'approve',
+                  status: 'approve'
                 });
               } else if (actionStatus == 'reject') {
                 const body = {
-                  status: 'reject',
+                  status: 'reject'
                 };
 
                 if (remark) {
@@ -770,7 +834,7 @@ export default function MainData() {
                 editMainDataStatus(body);
               } else if (actionStatus === 'downline_paid') {
                 editMainDataStatus({
-                  is_downline_paid: true,
+                  is_downline_paid: true
                 });
               }
             }}
@@ -828,7 +892,12 @@ export default function MainData() {
       </CModal>
       {assetName && (
         <div className="backdrop-container">
-          {assetName[0] === 'I' && <img src={`${API_BASE_URL}/main-data/asset/${assetName}`} style={{ height: '80%' }} />}
+          {assetName[0] === 'I' && (
+            <img
+              src={`${API_BASE_URL}/main-data/asset/${assetName}`}
+              style={{ height: '80%' }}
+            />
+          )}
           <div
             className="backdrop-bg"
             onClick={() => {
