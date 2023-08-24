@@ -18,7 +18,7 @@ import {
   CTableDataCell,
   CTableHead,
   CTableHeaderCell,
-  CTableRow,
+  CTableRow
 } from '@coreui/react';
 import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react';
@@ -26,7 +26,12 @@ import { toast } from 'react-hot-toast';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import * as yup from 'yup';
 import queryString from 'query-string';
-import { createClient, deleteClient, getClientList, updateClient } from 'src/services/client';
+import {
+  createClient,
+  deleteClient,
+  getClientList,
+  updateClient
+} from 'src/services/client';
 import { ChromePicker } from 'react-color';
 import Pagination from 'src/shared/components/Pagination';
 
@@ -56,7 +61,7 @@ export default function Client() {
       .max(13, 'Phone number must be valid and contain 8 - 13 digits')
       .required('Phone number required'),
     email: yup.string().email().required('Email is required'),
-    password: yup.string().required('Password is required'),
+    password: yup.string().required('Password is required')
   });
 
   const formik = useFormik({
@@ -65,6 +70,7 @@ export default function Client() {
       phone: '',
       email: '',
       password: '',
+      plain_password: ''
     },
     validationSchema: schema,
     onSubmit: () => {
@@ -73,7 +79,7 @@ export default function Client() {
       } else if (modalActionType === 'detail') {
         editClient();
       }
-    },
+    }
   });
 
   const formValidation = () => {
@@ -153,16 +159,23 @@ export default function Client() {
 
   const addClient = () => {
     let isError = false;
-    const body = { name: formik.values.name, email: formik.values.email, password: formik.values.password, color };
-    let phoneTemp = formik.values.phone;
-    if (phoneTemp[0] == 0) {
-      body.phone = '62' + phoneTemp.slice(1, phoneTemp.length);
-    } else if (phoneTemp[0] == 8) {
-      body.phone = '62' + phoneTemp;
-    } else {
-      isError = true;
-      toast.error('Invalid phone number format');
-    }
+    const body = {
+      name: formik.values.name,
+      email: formik.values.email,
+      password: formik.values.password,
+      color,
+      phone: formik.values.phone,
+      plain_password: formik.values.password
+    };
+    // let phoneTemp = formik.values.phone;
+    // if (phoneTemp[0] == 0) {
+    //   body.phone = '62' + phoneTemp.slice(1, phoneTemp.length);
+    // } else if (phoneTemp[0] == 8) {
+    //   body.phone = '62' + phoneTemp;
+    // } else {
+    //   isError = true;
+    //   toast.error('Invalid phone number format');
+    // }
 
     if (!isError) {
       createClient(body).then(() => {
@@ -176,18 +189,24 @@ export default function Client() {
 
   const editClient = () => {
     let isError = false;
-    const body = { name: formik.values.name, email: formik.values.email, password: formik.values.password, color };
-    let phoneTemp = formik.values.phone;
-    if (phoneTemp[0] == 0) {
-      body.phone = '62' + phoneTemp.slice(1, phoneTemp.length);
-    } else if (phoneTemp[0] == 8) {
-      body.phone = '62' + phoneTemp;
-    } else if (phoneTemp.slice(0, 2) == '62') {
-      body.phone = phoneTemp;
-    } else {
-      isError = true;
-      toast.error('Invalid phone number format');
-    }
+    const body = {
+      name: formik.values.name,
+      email: formik.values.email,
+      password: formik.values.plain_password,
+      color,
+      phone: formik.values.phone
+    };
+    // let phoneTemp = formik.values.phone;
+    // if (phoneTemp[0] == 0) {
+    //   body.phone = '62' + phoneTemp.slice(1, phoneTemp.length);
+    // } else if (phoneTemp[0] == 8) {
+    //   body.phone = '62' + phoneTemp;
+    // } else if (phoneTemp.slice(0, 2) == '62') {
+    //   body.phone = phoneTemp;
+    // } else {
+    //   isError = true;
+    //   toast.error('Invalid phone number format');
+    // }
 
     if (!isError) {
       updateClient(clientDetail.id, body).then(() => {
@@ -232,7 +251,9 @@ export default function Client() {
           <CRow className="mb-3">
             <CCol>
               <CRow>
-                <CFormLabel className="col-sm-3 col-form-label">Name</CFormLabel>
+                <CFormLabel className="col-sm-3 col-form-label">
+                  Name
+                </CFormLabel>
                 <CCol>
                   <CFormInput
                     type="text"
@@ -248,7 +269,9 @@ export default function Client() {
             </CCol>
             <CCol>
               <CRow>
-                <CFormLabel className="col-sm-3 col-form-label">Email</CFormLabel>
+                <CFormLabel className="col-sm-3 col-form-label">
+                  Email
+                </CFormLabel>
                 <CCol>
                   <CFormInput
                     type="email"
@@ -266,13 +289,15 @@ export default function Client() {
           <CRow className="mb-3">
             <CCol>
               <CRow>
-                <CFormLabel className="col-sm-3 col-form-label">Phone</CFormLabel>
+                <CFormLabel className="col-sm-3 col-form-label">
+                  Phone
+                </CFormLabel>
                 <CCol>
                   <CInputGroup>
-                    <CInputGroupText className="secondary">62</CInputGroupText>
+                    {/* <CInputGroupText className="secondary">62</CInputGroupText> */}
                     <CFormInput
                       type="number"
-                      placeholder="856999888"
+                      placeholder="62856999888"
                       value={phoneFilter}
                       onChange={(e) => {
                         setPhoneFilter(e.target.value);
@@ -284,7 +309,11 @@ export default function Client() {
               </CRow>
             </CCol>
             <CCol>
-              <CButton className="col-sm-12" color="info" onClick={filterHandle}>
+              <CButton
+                className="col-sm-12"
+                color="info"
+                onClick={filterHandle}
+              >
                 Cari
               </CButton>
             </CCol>
@@ -304,7 +333,7 @@ export default function Client() {
               name: '',
               phone: '',
               email: '',
-              password: '',
+              password: ''
             });
           }}
           className="mb-3"
@@ -340,7 +369,13 @@ export default function Client() {
                           setModalActionType('detail');
                           setShowModalTitle('Detail');
                           formik.setErrors({});
-                          formik.setValues({ name: el.name, phone: el.phone.slice(2, el.phone.length), email: el.email, color: el.color, password: 'aaa' });
+                          formik.setValues({
+                            name: el.name,
+                            phone: el.phone.slice(2, el.phone.length),
+                            email: el.email,
+                            color: el.color,
+                            password: 'aaa'
+                          });
                         }}
                       >
                         Detail & Update
@@ -362,6 +397,7 @@ export default function Client() {
                 ))}
               </CTableBody>
             </CTable>
+            <span>Result: {totalCount}</span>
             <Pagination
               setNextPagination={setNextPagination}
               totalCount={totalCount}
@@ -392,7 +428,9 @@ export default function Client() {
                 <CForm className="row" onSubmit={formik.handleSubmit}>
                   <CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Name</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Name
+                      </CFormLabel>
                       <CCol>
                         <CFormInput
                           value={formik.values.name}
@@ -403,12 +441,16 @@ export default function Client() {
                       </CCol>
                     </CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Phone</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Phone
+                      </CFormLabel>
                       <CCol>
                         <CInputGroup>
-                          <CInputGroupText className="secondary">62</CInputGroupText>
+                          {/* <CInputGroupText className="secondary">
+                            62
+                          </CInputGroupText> */}
                           <CFormInput
-                            placeholder="856999888"
+                            placeholder="62856999888"
                             type="number"
                             value={formik.values.phone}
                             onChange={(e) => {
@@ -419,7 +461,41 @@ export default function Client() {
                       </CCol>
                     </CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Email</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Password
+                      </CFormLabel>
+                      <CCol>
+                        <CInputGroup className="mb-3">
+                          <CFormInput
+                            value={formik.values.plain_password}
+                            type={showPassword ? 'text' : 'password'}
+                            onChange={(e) => {
+                              formik.setFieldValue(
+                                'plain_password',
+                                e.target.value
+                              );
+                            }}
+                          />
+                          <CButton
+                            type="button"
+                            color="info"
+                            variant="outline"
+                            onClick={() => {
+                              setShowPassword(!showPassword);
+                            }}
+                          >
+                            {showPassword ? 'Hide' : 'Show'}
+                          </CButton>
+                        </CInputGroup>
+                        <div className="text-danger text-sm">
+                          {errorForm.password}
+                        </div>
+                      </CCol>
+                    </CRow>
+                    <CRow className="mb-3">
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Email
+                      </CFormLabel>
                       <CCol>
                         <CFormInput
                           value={formik.values.email}
@@ -430,7 +506,9 @@ export default function Client() {
                       </CCol>
                     </CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Color</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Color
+                      </CFormLabel>
                       <CCol>
                         <ChromePicker
                           color={color}
@@ -449,7 +527,9 @@ export default function Client() {
                 <CForm className="row" onSubmit={formik.handleSubmit}>
                   <CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Name</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Name
+                      </CFormLabel>
                       <CCol>
                         <CFormInput
                           key="name"
@@ -460,16 +540,22 @@ export default function Client() {
                             formik.setFieldValue('name', e.target.value);
                           }}
                         />
-                        <div className="text-danger text-sm">{errorForm.name}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.name}
+                        </div>
                       </CCol>
                     </CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Phone</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Phone
+                      </CFormLabel>
                       <CCol>
                         <CInputGroup>
-                          <CInputGroupText className="secondary">62</CInputGroupText>
+                          {/* <CInputGroupText className="secondary">
+                            62
+                          </CInputGroupText> */}
                           <CFormInput
-                            placeholder="856999888"
+                            placeholder="62856999888"
                             type="number"
                             required
                             value={formik.values.phone}
@@ -478,11 +564,15 @@ export default function Client() {
                             }}
                           />
                         </CInputGroup>
-                        <div className="text-danger text-sm">{errorForm.phone}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.phone}
+                        </div>
                       </CCol>
                     </CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Email</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Email
+                      </CFormLabel>
                       <CCol>
                         <CFormInput
                           placeholder="johndoe@mail.com"
@@ -492,11 +582,15 @@ export default function Client() {
                             formik.setFieldValue('email', e.target.value);
                           }}
                         />
-                        <div className="text-danger text-sm">{errorForm.email}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.email}
+                        </div>
                       </CCol>
                     </CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Password</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Password
+                      </CFormLabel>
                       <CCol>
                         <CInputGroup className="mb-3">
                           <CFormInput
@@ -517,11 +611,15 @@ export default function Client() {
                             {showPassword ? 'Hide' : 'Show'}
                           </CButton>
                         </CInputGroup>
-                        <div className="text-danger text-sm">{errorForm.password}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.password}
+                        </div>
                       </CCol>
                     </CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Color</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Color
+                      </CFormLabel>
                       <CCol>
                         <ChromePicker
                           color={color}

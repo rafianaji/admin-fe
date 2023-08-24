@@ -57,6 +57,7 @@ export default function MainData() {
   const [clientId, setClientId] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [assetName, setAssetName] = useState('');
+  const [name, setName] = useState('');
 
   useEffect(() => {
     const parseQuery = queryString.parse(search);
@@ -200,6 +201,11 @@ export default function MainData() {
     } else {
       delete parseQuery.phone_number;
     }
+    if (name) {
+      parseQuery.name = name;
+    } else {
+      delete parseQuery.name;
+    }
     setQuery(queryString.stringify(parseQuery));
   };
 
@@ -249,10 +255,10 @@ export default function MainData() {
                 </CFormLabel>
                 <CCol>
                   <CInputGroup>
-                    <CInputGroupText className="secondary">62</CInputGroupText>
+                    {/* <CInputGroupText className="secondary">62</CInputGroupText> */}
                     <CFormInput
                       type="number"
-                      placeholder="856999888"
+                      placeholder="62856999888"
                       onChange={(e) => {
                         setPhoneNumber(e.target.value);
                       }}
@@ -351,6 +357,24 @@ export default function MainData() {
               </CRow>
             </CCol>
             <CCol>
+              <CRow>
+                <CFormLabel className="col-sm-3 col-form-label">
+                  Name
+                </CFormLabel>
+                <CCol>
+                  <CFormInput
+                    type="text"
+                    placeholder="John Doe"
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                    }}
+                    onBlur={filterHandle}
+                  />
+                </CCol>
+              </CRow>
+            </CCol>
+            {/* <CCol>
               <CButton
                 className="col-sm-12"
                 color="info"
@@ -358,7 +382,7 @@ export default function MainData() {
               >
                 Cari
               </CButton>
-            </CCol>
+            </CCol> */}
           </CRow>
         </CForm>
       </CContainer>
@@ -366,6 +390,7 @@ export default function MainData() {
         <CTableHead>
           <CTableRow>
             <CTableHeaderCell scope="col">No.</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Name</CTableHeaderCell>
             <CTableHeaderCell scope="col">Downline</CTableHeaderCell>
             <CTableHeaderCell scope="col">Sumber Akun</CTableHeaderCell>
             <CTableHeaderCell scope="col">Phone</CTableHeaderCell>
@@ -388,6 +413,9 @@ export default function MainData() {
               <CTableRow key={i}>
                 <CTableDataCell style={styleTableDataCell} scope="row">
                   {i + 1}
+                </CTableDataCell>
+                <CTableDataCell style={styleTableDataCell} align="middle">
+                  {el.name}
                 </CTableDataCell>
                 <CTableDataCell style={styleTableDataCell} align="middle">
                   {el.downline_id.name}
@@ -452,7 +480,7 @@ export default function MainData() {
                   {el.status === 'approve' && !el.client_id && (
                     <CButton
                       size="sm"
-                      color="secondary text-white"
+                      color="secondary text-white me-2"
                       onClick={() => {
                         chooseClientHandle();
                         setMainDataDetail(el);
@@ -475,7 +503,8 @@ export default function MainData() {
                     </CButton>
                   )}
                   {(el.status.toLowerCase() === 'settlement' ||
-                    el.status.toLowerCase() === 'reject') && (
+                    el.status.toLowerCase() === 'reject' ||
+                    el.status.toLowerCase() === 'approve') && (
                     <CButton
                       color="info"
                       size="sm"
@@ -492,6 +521,7 @@ export default function MainData() {
           })}
         </CTableBody>
       </CTable>
+      <span>Result: {totalCount}</span>
       <Pagination
         setNextPagination={setNextPagination}
         totalCount={totalCount}

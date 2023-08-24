@@ -5,22 +5,39 @@ const adminNav = [
     component: CNavItem,
     name: 'Main Data',
     to: '/admin/main-data',
+    items: [
+      {
+        component: CNavItem,
+        name: 'Main Data',
+        to: '/admin/main-data'
+      },
+      {
+        component: CNavItem,
+        name: 'E-Wallet',
+        to: '/admin/main-data?category=e-wallet'
+      },
+      {
+        component: CNavItem,
+        name: 'Rekening',
+        to: '/admin/main-data?category=rekening'
+      }
+    ]
   },
   {
     component: CNavItem,
     name: 'Master Downline',
-    to: '/admin/downline',
+    to: '/admin/downline'
   },
   {
     component: CNavItem,
     name: 'Master Client',
-    to: '/admin/client',
+    to: '/admin/client'
   },
   {
     component: CNavItem,
     name: 'Master Account Type',
-    to: '/admin/account-type',
-  },
+    to: '/admin/account-type'
+  }
   // {
   //   component: CNavGroup,
   //   name: 'Buttons',

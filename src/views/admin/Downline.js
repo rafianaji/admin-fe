@@ -147,16 +147,20 @@ export default function Downline() {
 
   const addDownline = () => {
     let isError = false;
-    const body = { name: formik.values.name, email: formik.values.email };
-    let phoneTemp = formik.values.phone;
-    if (phoneTemp[0] == 0) {
-      body.phone = '62' + phoneTemp.slice(1, phoneTemp.length);
-    } else if (phoneTemp[0] == 8) {
-      body.phone = '62' + phoneTemp;
-    } else {
-      isError = true;
-      toast.error('Invalid phone number format');
-    }
+    const body = {
+      name: formik.values.name,
+      email: formik.values.email,
+      phone: formik.values.phone
+    };
+    // let phoneTemp = formik.values.phone;
+    // if (phoneTemp[0] == 0) {
+    //   body.phone = '62' + phoneTemp.slice(1, phoneTemp.length);
+    // } else if (phoneTemp[0] == 8) {
+    //   body.phone = '62' + phoneTemp;
+    // } else {
+    //   isError = true;
+    //   toast.error('Invalid phone number format');
+    // }
 
     if (!isError) {
       createDownline(body).then(() => {
@@ -171,18 +175,22 @@ export default function Downline() {
 
   const editDownline = () => {
     let isError = false;
-    const body = { name: formik.values.name, email: formik.values.email };
-    let phoneTemp = formik.values.phone;
-    if (phoneTemp[0] == 0) {
-      body.phone = '62' + phoneTemp.slice(1, phoneTemp.length);
-    } else if (phoneTemp[0] == 8) {
-      body.phone = '62' + phoneTemp;
-    } else if (phoneTemp.slice(0, 2) == '62') {
-      body.phone = phoneTemp;
-    } else {
-      isError = true;
-      toast.error('Invalid phone number format');
-    }
+    const body = {
+      name: formik.values.name,
+      email: formik.values.email,
+      phone: formik.values.phone
+    };
+    // let phoneTemp = formik.values.phone;
+    // if (phoneTemp[0] == 0) {
+    //   body.phone = '62' + phoneTemp.slice(1, phoneTemp.length);
+    // } else if (phoneTemp[0] == 8) {
+    //   body.phone = '62' + phoneTemp;
+    // } else if (phoneTemp.slice(0, 2) == '62') {
+    //   body.phone = phoneTemp;
+    // } else {
+    //   isError = true;
+    //   toast.error('Invalid phone number format');
+    // }
 
     if (!isError) {
       updateDownline(downlineDetail.id, body).then(() => {
@@ -279,10 +287,10 @@ export default function Downline() {
                 </CFormLabel>
                 <CCol>
                   <CInputGroup>
-                    <CInputGroupText className="secondary">62</CInputGroupText>
+                    {/* <CInputGroupText className="secondary">62</CInputGroupText> */}
                     <CFormInput
                       type="number"
-                      placeholder="856999888"
+                      placeholder="62856999888"
                       value={phoneFilter}
                       onChange={(e) => {
                         setPhoneFilter(e.target.value);
@@ -405,6 +413,7 @@ export default function Downline() {
                 ))}
               </CTableBody>
             </CTable>
+            <span>Result: {totalCount}</span>
             <Pagination
               setNextPagination={setNextPagination}
               totalCount={totalCount}
@@ -484,11 +493,11 @@ export default function Downline() {
                       </CFormLabel>
                       <CCol>
                         <CInputGroup>
-                          <CInputGroupText className="secondary">
+                          {/* <CInputGroupText className="secondary">
                             62
-                          </CInputGroupText>
+                          </CInputGroupText> */}
                           <CFormInput
-                            placeholder="856999888"
+                            placeholder="62856999888"
                             type="number"
                             value={formik.values.phone}
                             onChange={(e) => {
@@ -555,9 +564,9 @@ export default function Downline() {
                       </CFormLabel>
                       <CCol>
                         <CInputGroup>
-                          <CInputGroupText className="secondary">
+                          {/* <CInputGroupText className="secondary">
                             62
-                          </CInputGroupText>
+                          </CInputGroupText> */}
                           <CFormInput
                             placeholder="856999888"
                             type="number"

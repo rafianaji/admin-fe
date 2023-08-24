@@ -192,7 +192,7 @@ export default function Form() {
       account_type_id: formik.values.account_type_id,
       // downline_id: downlineId,
       name: formik.values.name,
-      // phone_number: formik.values.phone_number,
+      phone_number: formik.values.phone_number,
       ktp_number: formik.values.ktp_number,
       kk_number: formik.values.kk_number,
       mother_name: formik.values.mother_name,
@@ -219,15 +219,15 @@ export default function Form() {
     };
 
     let isError = false;
-    let phoneTemp = formik.values.phone_number;
-    if (phoneTemp[0] == 0) {
-      body.phone_number = '62' + phoneTemp.slice(1, phoneTemp.length);
-    } else if (phoneTemp[0] == 8) {
-      body.phone_number = '62' + phoneTemp;
-    } else {
-      isError = true;
-      toast.error('Invalid phone number format');
-    }
+    // let phoneTemp = formik.values.phone_number;
+    // if (phoneTemp[0] == 0) {
+    //   body.phone_number = '62' + phoneTemp.slice(1, phoneTemp.length);
+    // } else if (phoneTemp[0] == 8) {
+    //   body.phone_number = '62' + phoneTemp;
+    // } else {
+    // isError = true;
+    // toast.error('Invalid phone number format');
+    // }
 
     if (anotherFile1) {
       body.another_file_1_url = anotherFile1;
@@ -296,7 +296,9 @@ export default function Form() {
                 <CRow className="p-4">
                   <CForm>
                     <div className="mb-3">
-                      <CFormLabel>Akun Tipe</CFormLabel>
+                      <CFormLabel>
+                        Akun Tipe <span className="text-danger">*</span>
+                      </CFormLabel>
                       <CFormSelect
                         onChange={(e) => {
                           formik.setFieldValue(
@@ -319,7 +321,9 @@ export default function Form() {
                       </div>
                     </div>
                     <div className="mb-3">
-                      <CFormLabel>Nama</CFormLabel>
+                      <CFormLabel>
+                        Nama <span className="text-danger">*</span>
+                      </CFormLabel>
                       <CFormInput
                         placeholder="Sumiyati"
                         required
@@ -332,7 +336,9 @@ export default function Form() {
                       </div>
                     </div>
                     <div className="mb-3">
-                      <CFormLabel>Nomor Hp</CFormLabel>
+                      <CFormLabel>
+                        Nomor Hp <span className="text-danger">*</span>
+                      </CFormLabel>
                       <CInputGroup>
                         {/* <CInputGroupText className="bg-info">
                           62
@@ -355,7 +361,9 @@ export default function Form() {
                     </div>
                     <div className="d-flex">
                       <div className="mb-3 pe-2">
-                        <CFormLabel>Nomor KTP</CFormLabel>
+                        <CFormLabel>
+                          Nomor KTP <span className="text-danger">*</span>
+                        </CFormLabel>
                         <CFormInput
                           placeholder="20101234567890123"
                           type="number"
@@ -370,7 +378,9 @@ export default function Form() {
                         </div>
                       </div>
                       <div className="mb-3 ps-2">
-                        <CFormLabel>Nomor KK</CFormLabel>
+                        <CFormLabel>
+                          Nomor KK <span className="text-danger">*</span>
+                        </CFormLabel>
                         <CFormInput
                           placeholder="20101234567890123"
                           type="number"
@@ -385,7 +395,9 @@ export default function Form() {
                       </div>
                     </div>
                     <div className="mb-3">
-                      <CFormLabel>Nama Ibu</CFormLabel>
+                      <CFormLabel>
+                        Nama Ibu <span className="text-danger">*</span>
+                      </CFormLabel>
                       <CFormInput
                         placeholder="Madonna"
                         type="text"
@@ -400,7 +412,9 @@ export default function Form() {
                     </div>
                     {walletType == 'rekening' && (
                       <div className="mb-3">
-                        <CFormLabel>Alamat KTP</CFormLabel>
+                        <CFormLabel>
+                          Alamat KTP <span className="text-danger">*</span>
+                        </CFormLabel>
                         <CFormTextarea
                           placeholder="Jl. Pisang Raya No. 12 Jakarta Barat 002/003"
                           type="text"
@@ -419,7 +433,9 @@ export default function Form() {
                     )}
                     {walletType == 'rekening' && (
                       <div className="mb-3">
-                        <CFormLabel>Bank Cabang</CFormLabel>
+                        <CFormLabel>
+                          Bank Cabang <span className="text-danger">*</span>
+                        </CFormLabel>
                         <CFormInput
                           placeholder="Kab. Tangerang"
                           type="text"
@@ -435,7 +451,9 @@ export default function Form() {
                     )}
                     <div className="d-flex">
                       <div className="mb-3 pe-2">
-                        <CFormLabel>Email</CFormLabel>
+                        <CFormLabel>
+                          Email <span className="text-danger">*</span>
+                        </CFormLabel>
                         <CFormInput
                           placeholder="sumiyati@gmail.com"
                           type="email"
@@ -449,7 +467,10 @@ export default function Form() {
                         </div>
                       </div>
                       <div className="mb-3 ps-2">
-                        <CFormLabel>Kata Sandi Email</CFormLabel>
+                        <CFormLabel>
+                          Kata Sandi Email{' '}
+                          <span className="text-danger">*</span>
+                        </CFormLabel>
                         <CFormInput
                           placeholder="Kata Sandi Email"
                           type="text"
@@ -469,7 +490,9 @@ export default function Form() {
                     {walletType == 'rekening' && (
                       <div className="d-flex">
                         <div className="mb-3 pe-2">
-                          <CFormLabel>Nomor Kartu</CFormLabel>
+                          <CFormLabel>
+                            Nomor Kartu <span className="text-danger">*</span>
+                          </CFormLabel>
                           <CFormInput
                             value={ccNumber(formik.values.card_number)}
                             placeholder="1234 1234 1234 1234"
@@ -487,7 +510,10 @@ export default function Form() {
                           </div>
                         </div>
                         <div className="mb-3 ps-2">
-                          <CFormLabel>Tanggal Kadaluarsa</CFormLabel>
+                          <CFormLabel>
+                            Tanggal Kadaluarsa{' '}
+                            <span className="text-danger">*</span>
+                          </CFormLabel>
                           <CFormInput
                             placeholder="12/26"
                             maxLength={5}
@@ -506,7 +532,9 @@ export default function Form() {
                     {walletType == 'rekening' && (
                       <div className="d-flex">
                         <div className="mb-3 pe-2">
-                          <CFormLabel>Akses Kode</CFormLabel>
+                          <CFormLabel>
+                            Akses Kode <span className="text-danger">*</span>
+                          </CFormLabel>
                           <CFormInput
                             placeholder="sumiyati99"
                             type="text"
@@ -523,7 +551,10 @@ export default function Form() {
                           </div>
                         </div>
                         <div className="mb-3 ps-2">
-                          <CFormLabel>Kata Sandi Mbanking</CFormLabel>
+                          <CFormLabel>
+                            Kata Sandi Mbanking{' '}
+                            <span className="text-danger">*</span>
+                          </CFormLabel>
                           <CFormInput
                             placeholder="sumiyaticantik123"
                             type="text"
@@ -542,7 +573,9 @@ export default function Form() {
                       </div>
                     )}
                     <div className="mb-3">
-                      <CFormLabel>Pin ATM</CFormLabel>
+                      <CFormLabel>
+                        Pin ATM <span className="text-danger">*</span>
+                      </CFormLabel>
                       <CFormInput
                         placeholder="123456"
                         type="number"
@@ -557,7 +590,10 @@ export default function Form() {
                       <>
                         <div className="d-flex">
                           <div className="mb-3 pe-2">
-                            <CFormLabel>Nama Pengguna Aplikasi</CFormLabel>
+                            <CFormLabel>
+                              Nama Pengguna Aplikasi{' '}
+                              <span className="text-danger">*</span>
+                            </CFormLabel>
                             <CFormInput
                               placeholder="suminati2023"
                               type="text"
@@ -577,7 +613,10 @@ export default function Form() {
                             </div>
                           </div>
                           <div className="mb-3 ps-2">
-                            <CFormLabel>Kata Sandi Aplikasi</CFormLabel>
+                            <CFormLabel>
+                              Kata Sandi Aplikasi{' '}
+                              <span className="text-danger">*</span>
+                            </CFormLabel>
                             <CFormInput
                               placeholder="sumiyati0003"
                               type="text"
@@ -597,7 +636,8 @@ export default function Form() {
 
                         <div className="mb-3">
                           <CFormLabel>
-                            Kata Sandi Transaksaksi Aplikasi
+                            Kata Sandi Transaksaksi Aplikasi{' '}
+                            <span className="text-danger">*</span>
                           </CFormLabel>
                           <CFormInput
                             placeholder="sumiatibca2023"
@@ -616,7 +656,10 @@ export default function Form() {
                         </div>
                         <div className="d-flex">
                           <div className="mb-3 pe-2">
-                            <CFormLabel>Nama Pengguna iBanking</CFormLabel>
+                            <CFormLabel>
+                              Nama Pengguna iBanking{' '}
+                              <span className="text-danger">*</span>
+                            </CFormLabel>
                             <CFormInput
                               placeholder="sumsum1902"
                               type="text"
@@ -633,7 +676,10 @@ export default function Form() {
                             </div>
                           </div>
                           <div className="mb-3 ps-2">
-                            <CFormLabel>Kata Sandi iBanking</CFormLabel>
+                            <CFormLabel>
+                              Kata Sandi iBanking{' '}
+                              <span className="text-danger">*</span>
+                            </CFormLabel>
                             <CFormInput
                               placeholder="998899"
                               type="text"
@@ -651,7 +697,10 @@ export default function Form() {
                           </div>
                         </div>
                         <div className="mb-3">
-                          <CFormLabel>Pin Token iBanking</CFormLabel>
+                          <CFormLabel>
+                            Pin Token iBanking{' '}
+                            <span className="text-danger">*</span>
+                          </CFormLabel>
                           <CFormInput
                             placeholder="2309293"
                             type="text"
@@ -692,7 +741,9 @@ export default function Form() {
                     <div className="mb-3">
                       <CRow>
                         <CCol>
-                          <CFormLabel>Photo KTP</CFormLabel>
+                          <CFormLabel>
+                            Photo KTP <span className="text-danger">*</span>
+                          </CFormLabel>
                           <br />
                           <CButton
                             className="btn btn-info  full-width"
@@ -710,7 +761,10 @@ export default function Form() {
                           </div>
                         </CCol>
                         <CCol>
-                          <CFormLabel>Selfie Photo KTP</CFormLabel>
+                          <CFormLabel>
+                            Selfie Photo KTP{' '}
+                            <span className="text-danger">*</span>
+                          </CFormLabel>
                           <CButton
                             className="btn btn-info full-width"
                             onClick={() => {
@@ -726,7 +780,10 @@ export default function Form() {
                       </CRow>
                     </div>
                     <div className="mb-3">
-                      <CFormLabel>Video Verification</CFormLabel>
+                      <CFormLabel>
+                        Video Verification{' '}
+                        <span className="text-danger">*</span>
+                      </CFormLabel>
                       <CButton
                         className="btn btn-info  full-width"
                         onClick={() => {

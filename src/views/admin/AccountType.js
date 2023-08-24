@@ -19,13 +19,18 @@ import {
   CTableDataCell,
   CTableHead,
   CTableHeaderCell,
-  CTableRow,
+  CTableRow
 } from '@coreui/react';
 import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react';
 
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { createAccountType, deleteAccountType, getAccountTypeList, updateAccountType } from 'src/services/accountType';
+import {
+  createAccountType,
+  deleteAccountType,
+  getAccountTypeList,
+  updateAccountType
+} from 'src/services/accountType';
 import * as yup from 'yup';
 import queryString from 'query-string';
 import Pagination from 'src/shared/components/Pagination';
@@ -46,13 +51,13 @@ export default function AccountType() {
 
   const schema = yup.object().shape({
     name: yup.string().required('Name is required'),
-    category: yup.string().required('Category is required'),
+    category: yup.string().required('Category is required')
   });
 
   const formik = useFormik({
     initialValues: {
       name: '',
-      category: '',
+      category: ''
     },
     validationSchema: schema,
     onSubmit: () => {
@@ -61,7 +66,7 @@ export default function AccountType() {
       } else if (modalActionType === 'detail') {
         editAccountType();
       }
-    },
+    }
   });
 
   const formValidation = () => {
@@ -133,7 +138,10 @@ export default function AccountType() {
   };
 
   const addAccountType = () => {
-    createAccountType({ name: formik.values.name, category: formik.values.category }).then(() => {
+    createAccountType({
+      name: formik.values.name,
+      category: formik.values.category
+    }).then(() => {
       closeModal();
       fetchAccountTypeList();
       formik.setValues({ name: '', category: '' });
@@ -141,7 +149,10 @@ export default function AccountType() {
   };
 
   const editAccountType = () => {
-    updateAccountType(AccountTypeDetail.id, { name: formik.values.name, category: formik.values.category }).then(() => {
+    updateAccountType(AccountTypeDetail.id, {
+      name: formik.values.name,
+      category: formik.values.category
+    }).then(() => {
       closeModal();
       fetchAccountTypeList();
       formik.setValues({ name: '', category: '' });
@@ -179,7 +190,9 @@ export default function AccountType() {
           <CRow className="mb-3">
             <CCol>
               <CRow>
-                <CFormLabel className="col-sm-3 col-form-label">Name</CFormLabel>
+                <CFormLabel className="col-sm-3 col-form-label">
+                  Name
+                </CFormLabel>
                 <CCol>
                   <CFormInput
                     type="text"
@@ -194,7 +207,11 @@ export default function AccountType() {
               </CRow>
             </CCol>
             <CCol>
-              <CButton className="col-sm-12" color="info" onClick={filterHandle}>
+              <CButton
+                className="col-sm-12"
+                color="info"
+                onClick={filterHandle}
+              >
                 Cari
               </CButton>
             </CCol>
@@ -242,7 +259,7 @@ export default function AccountType() {
                           setShowModalTitle('Detail');
                           formik.setValues({
                             name: el.name,
-                            category: el.category,
+                            category: el.category
                           });
                         }}
                       >
@@ -265,6 +282,7 @@ export default function AccountType() {
                 ))}
               </CTableBody>
             </CTable>
+            <span>Result: {totalCount}</span>
             <Pagination
               setNextPagination={setNextPagination}
               totalCount={totalCount}
@@ -295,7 +313,9 @@ export default function AccountType() {
                 <CForm className="row">
                   <CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Name</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Name
+                      </CFormLabel>
                       <CCol>
                         <CFormInput
                           value={formik.values.name}
@@ -306,7 +326,9 @@ export default function AccountType() {
                       </CCol>
                     </CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Category</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Category
+                      </CFormLabel>
                       <CCol>
                         <CFormSelect
                           value={formik.values.category}
@@ -322,7 +344,9 @@ export default function AccountType() {
                           <option value="rekening">Rekening</option>
                           <option value="e-wallet">E-Wallet</option>
                         </CFormSelect>
-                        <div className="text-danger text-sm">{errorForm.category}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.category}
+                        </div>
                       </CCol>
                     </CRow>
                   </CRow>
@@ -334,7 +358,9 @@ export default function AccountType() {
                 <CForm className="row" onSubmit={formik.handleSubmit}>
                   <CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Name</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Name
+                      </CFormLabel>
                       <CCol>
                         <CFormInput
                           key="name"
@@ -345,13 +371,17 @@ export default function AccountType() {
                             formik.setFieldValue('name', e.target.value);
                           }}
                         />
-                        <div className="text-danger text-sm">{errorForm.name}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.name}
+                        </div>
                       </CCol>
                     </CRow>
                   </CRow>
                   <CRow>
                     <CRow className="mb-3">
-                      <CFormLabel className="col-sm-2 col-form-label">Category</CFormLabel>
+                      <CFormLabel className="col-sm-2 col-form-label">
+                        Category
+                      </CFormLabel>
                       <CCol>
                         <CFormSelect
                           value={formik.values.category}
@@ -367,7 +397,9 @@ export default function AccountType() {
                           <option value="rekening">Rekening</option>
                           <option value="e-wallet">E-Wallet</option>
                         </CFormSelect>
-                        <div className="text-danger text-sm">{errorForm.category}</div>
+                        <div className="text-danger text-sm">
+                          {errorForm.category}
+                        </div>
                       </CCol>
                     </CRow>
                   </CRow>
