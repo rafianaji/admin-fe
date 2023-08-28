@@ -1,4 +1,11 @@
-import { CButton, CCol, CContainer, CForm, CFormInput, CFormLabel } from '@coreui/react';
+import {
+  CButton,
+  CCol,
+  CContainer,
+  CForm,
+  CFormInput,
+  CFormLabel
+} from '@coreui/react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { clientLogin } from 'src/services/client';
@@ -11,7 +18,7 @@ export default function Login() {
   const submitLogin = () => {
     clientLogin({
       email,
-      password,
+      password
     })
       .then((res) => {
         const data = res.data;
@@ -38,7 +45,7 @@ export default function Login() {
   return (
     <CContainer className="">
       <CCol className="d-flex align-items-center justify-content-center min-vh-100">
-        <CForm>
+        <CForm className="col-4">
           <h4>Client Login</h4>
           <div>
             <CFormLabel className="col-sm-2 col-form-label">Email</CFormLabel>
@@ -48,15 +55,27 @@ export default function Login() {
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
+              onKeyUp={(e) => {
+                if (e.key === 'Enter') {
+                  submitLogin();
+                }
+              }}
             />
           </div>
           <div>
-            <CFormLabel className="col-sm-2 col-form-label">Password</CFormLabel>
+            <CFormLabel className="col-sm-2 col-form-label">
+              Password
+            </CFormLabel>
             <br />
             <CFormInput
               type="password"
               onChange={(e) => {
                 setPassword(e.target.value);
+              }}
+              onKeyUp={(e) => {
+                if (e.key === 'Enter') {
+                  submitLogin();
+                }
               }}
             />
           </div>

@@ -2,10 +2,27 @@ import { CPagination, CPaginationItem } from '@coreui/react';
 import React from 'react';
 
 export default function Pagination(props) {
-  const { page, setPagination, setPreviousPagination, setNextPagination, totalCount, count } = props;
+  const {
+    page,
+    setPagination,
+    setPreviousPagination,
+    setNextPagination,
+    totalCount,
+    count
+  } = props;
   return (
     <>
       <CPagination align="end" size="sm" className="mt-3">
+        {Number(page) > 3 && (
+          <CPaginationItem
+            className="cursor-pointer"
+            onClick={() => {
+              setPagination(1);
+            }}
+          >
+            {'<<'}
+          </CPaginationItem>
+        )}
         {Number(page) > 1 && (
           <CPaginationItem
             className="cursor-pointer"
@@ -65,6 +82,16 @@ export default function Pagination(props) {
             }}
           >
             Next
+          </CPaginationItem>
+        )}
+        {page < Math.ceil(totalCount / count) - 2 && (
+          <CPaginationItem
+            className="cursor-pointer"
+            onClick={() => {
+              setPagination(Math.ceil(totalCount / count));
+            }}
+          >
+            {'>>'}
           </CPaginationItem>
         )}
       </CPagination>

@@ -4,6 +4,7 @@ import './scss/style.scss';
 import { Toaster } from 'react-hot-toast';
 import AdminLayout from './layout/AdminLayout';
 import ClientLayout from './layout/ClientLayout';
+import ForgotPassword from './views/admin/ForgotPassword';
 
 const loading = (
   <div className="pt-3 text-center">
@@ -36,6 +37,12 @@ class App extends Component {
               path="/admin/login"
               name="Form"
               element={<AdminLogin />}
+            />
+            <Route
+              exact
+              path="/admin/forgot-password"
+              name="Form"
+              element={<ForgotPassword />}
             />
             <Route path="/admin/*" name="Home" element={<AdminLayout />} />
             <Route path="/client/*" name="Home" element={<ClientLayout />} />

@@ -6,16 +6,22 @@ const axiosSetup = axios.create({
   baseURL: API_BASE_URL
 });
 
-axiosSetup.interceptors.request.use((req) => {
-  document.getElementById('loader-spinner').style.display = 'none';
+axiosSetup.interceptors.request.use(async (req) => {
+  const adminToken = await localStorage.getItem('admin_token');
+  if (adminToken && !req.headers.Authorization) {
+    req.headers.Authorization = `Bearer ${adminToken}`;
+  }
+  document.getElementById('loader-spinner').style.display = 'flex';
   return req;
 });
 
 axiosSetup.interceptors.response.use(
   (res) => {
+    document.getElementById('loader-spinner').style.display = 'none';
     const method = res.config.method.toLowerCase();
+    const url = res.config.url;
 
-    if (method === 'post') {
+    if (method === 'post' && !url.includes('login')) {
       toast.success('Successfully Created Data');
     }
     if (method === 'put') {

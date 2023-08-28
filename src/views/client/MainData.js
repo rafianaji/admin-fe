@@ -16,7 +16,7 @@ import {
   CTableDataCell,
   CTableHead,
   CTableHeaderCell,
-  CTableRow,
+  CTableRow
 } from '@coreui/react';
 import React, { useEffect, useState } from 'react';
 import jwtDecode from 'jwt-decode';
@@ -25,8 +25,9 @@ import { dateConvertToDMY } from 'src/shared/helpers/dateHelper';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import queryString from 'query-string';
 import { getAccountTypeList } from 'src/services/accountType';
-import { API_BASE_URL } from 'src/shared/config/config';
+import { API_BASE_URL, ASSET_URL } from 'src/shared/config/config';
 import Pagination from 'src/shared/components/Pagination';
+import { ccNumber, expFormat } from 'src/shared/helpers/ccFormat';
 
 export default function MainData() {
   const [mainDataList, setMainDataList] = useState([]);
@@ -59,6 +60,7 @@ export default function MainData() {
       parseQuery.page = 1;
       parseQuery.count = 20;
       setQuery(queryString.stringify(parseQuery));
+      window.location.reload();
     }
   }, [search]);
 
@@ -67,8 +69,12 @@ export default function MainData() {
     setShowModalDetail(true);
   };
 
-  const fetchMainDataList = () => {
-    getMainDataList(`?client_id=${clientId}&${search.slice(1, search.length)}`).then((res) => {
+  const fetchMainDataList = async () => {
+    const clientToken = await localStorage.getItem('client_token');
+    getMainDataList(
+      clientToken,
+      `?client_id=${clientId}&${search.slice(1, search.length)}`
+    ).then((res) => {
       setMainDataList(res.data.result);
       setTotalCount(res.data.count);
     });
@@ -144,7 +150,9 @@ export default function MainData() {
           <CRow className="mb-3">
             <CCol>
               <CRow>
-                <CFormLabel className="col-sm-3 col-form-label">Sumber Akun</CFormLabel>
+                <CFormLabel className="col-sm-3 col-form-label">
+                  Sumber Akun
+                </CFormLabel>
                 <CCol>
                   <CFormSelect
                     className="mb-3"
@@ -176,11 +184,13 @@ export default function MainData() {
             </CCol>
             <CCol>
               <CRow>
-                <CFormLabel className="col-sm-3 col-form-label">No. Handphone</CFormLabel>
+                <CFormLabel className="col-sm-3 col-form-label">
+                  No. Handphone
+                </CFormLabel>
                 <CCol>
                   <CFormInput
                     type="number"
-                    placeholder="856999888"
+                    placeholder="62856999888"
                     onChange={(e) => {
                       setPhoneNumber(e.target.value);
                     }}
@@ -208,28 +218,34 @@ export default function MainData() {
               </CRow>
             </CCol>
             <CCol>
-              <CButton className="col-sm-12" color="info" onClick={filterHandle}>
+              <CButton
+                className="col-sm-12"
+                color="info"
+                onClick={filterHandle}
+              >
                 Cari
               </CButton>
             </CCol>
           </CRow>
         </CForm>
       </CContainer>
-      <CTable>
+      <CTable responsive>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell scope="col">No.</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Sumber Akun</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Name</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Source</CTableHeaderCell>
             <CTableHeaderCell scope="col">Phone</CTableHeaderCell>
             <CTableHeaderCell scope="col">KTP</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Aksi</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Action</CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody>
           {mainDataList.map((el, i) => (
             <CTableRow key={i}>
-              <CTableDataCell scope="row">{i + 1}</CTableDataCell>
-              <CTableDataCell align="middle">{el.account_type_id.name}</CTableDataCell>
+              <CTableDataCell align="middle">{el.name}</CTableDataCell>
+              <CTableDataCell align="middle">
+                {el.account_type_id.name}
+              </CTableDataCell>
               <CTableDataCell align="middle">{el.phone_number}</CTableDataCell>
               <CTableDataCell align="middle">{el.ktp_number}</CTableDataCell>
               <CTableDataCell align="middle">
@@ -240,7 +256,7 @@ export default function MainData() {
                     mainDataDetailHandle(el);
                   }}
                 >
-                  Cek Detail
+                  Detail
                 </CButton>
               </CTableDataCell>
             </CTableRow>
@@ -257,36 +273,57 @@ export default function MainData() {
           setPagination(e);
         }}
       />
-      <CModal size="lg" backdrop="static" visible={showModalDetail} onClose={() => setShowModalDetail(false)}>
+      <CModal
+        size="lg"
+        backdrop="static"
+        visible={showModalDetail}
+        onClose={() => setShowModalDetail(false)}
+      >
         <CModalHeader>
           <CModalTitle>Main Data Detail</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          <div className="d-flex justify-content-between flex-wrap">
+          <div className="d-flex flex-wrap">
+            <div className="my-3 col-4">
+              <div className="h6">Type</div>
+              <div className="text-capitalize">
+                {mainDataDetail?.account_type_id?.category}
+              </div>
+            </div>
+            <div className="my-3 col-4">
+              <div className="h6">Account</div>
+              <div>{mainDataDetail?.account_type_id?.name}</div>
+            </div>
             <div className="my-3 col-4">
               <div className="h6">Name</div>
-              <div>{mainDataDetail.name}</div>
+              <div>{mainDataDetail?.name}</div>
             </div>
             <div className="my-3 col-4">
               <div className="h6">Phone Number</div>
               <div>{mainDataDetail.phone_number}</div>
             </div>
             <div className="my-3 col-4">
-              <div className="h6">KTP Number</div>
+              <div className="h6">KTP</div>
               <div>{mainDataDetail.ktp_number}</div>
             </div>
             <div className="my-3 col-4">
-              <div className="h6">KK Number</div>
+              <div className="h6">KK</div>
               <div>{mainDataDetail.kk_number}</div>
             </div>
             <div className="my-3 col-4">
               <div className="h6">Mother Name</div>
-              <div>{mainDataDetail.kk_number}</div>
+              <div>{mainDataDetail.mother_name}</div>
             </div>
             <div className="my-3 col-4">
-              <div className="h6">Full KTP Address</div>
+              <div className="h6">Full Address</div>
               <div>{mainDataDetail.full_ktp_address}</div>
             </div>
+            {mainDataDetail.account_type_id?.category === 'rekening' && (
+              <div className="my-3 col-4">
+                <div className="h6">Bank Branch</div>
+                <div>{mainDataDetail.bank_branch}</div>
+              </div>
+            )}
             <div className="my-3 col-4">
               <div className="h6">Email</div>
               <div>{mainDataDetail.email}</div>
@@ -295,59 +332,66 @@ export default function MainData() {
               <div className="h6">Email Password</div>
               <div>{mainDataDetail.email_password}</div>
             </div>
-
-            <div className="my-3 col-4">
-              <div className="h6">Pin</div>
-              <div>{mainDataDetail.pin}</div>
-            </div>
-            <div className="my-3 col-4">
-              <div className="h6">Active Period</div>
-              <div>{mainDataDetail.active_period ? dateConvertToDMY(mainDataDetail.active_period) : '-'}</div>
-            </div>
             {mainDataDetail.account_type_id?.category === 'rekening' && (
               <>
                 <div className="my-3 col-4">
-                  <div className="h6">Bank Branch</div>
-                  <div>{mainDataDetail.bank_branch}</div>
-                </div>
-                <div className="my-3 col-4">
                   <div className="h6">Card Number</div>
-                  <div>{mainDataDetail.card_number}</div>
+                  <div>{ccNumber(mainDataDetail.card_number)}</div>
                 </div>
                 <div className="my-3 col-4">
-                  <div className="h6">Exp Date</div>
-                  <div>{mainDataDetail.exp_date}</div>
+                  <div className="h6">Exp. Date</div>
+                  <div>{expFormat(mainDataDetail.exp_date)}</div>
                 </div>
                 <div className="my-3 col-4">
                   <div className="h6">Access Code</div>
                   <div>{mainDataDetail.access_code}</div>
                 </div>
                 <div className="my-3 col-4">
-                  <div className="h6">Mbanking Password</div>
+                  <div className="h6">mBanking Password</div>
                   <div>{mainDataDetail.mbanking_password}</div>
                 </div>
+              </>
+            )}
+            <div className="my-3 col-4">
+              <div className="h6">PIN</div>
+              <div>{mainDataDetail.pin}</div>
+            </div>
+            {mainDataDetail.account_type_id?.category === 'rekening' && (
+              <>
                 <div className="my-3 col-4">
-                  <div className="h6">Username Acct</div>
+                  <div className="h6">Username App</div>
                   <div>{mainDataDetail.username_acct}</div>
                 </div>
                 <div className="my-3 col-4">
-                  <div className="h6">Password Acct</div>
+                  <div className="h6">Password App</div>
                   <div>{mainDataDetail.password_acct}</div>
                 </div>
                 <div className="my-3 col-4">
-                  <div className="h6">Transaction Password Acct</div>
+                  <div className="h6">Transaction Password App</div>
                   <div>{mainDataDetail.transaction_password_acct}</div>
                 </div>
                 <div className="my-3 col-4">
-                  <div className="h6">Username Ibanking</div>
+                  <div className="h6">Username iBanking</div>
                   <div>{mainDataDetail.username_ibanking}</div>
                 </div>
                 <div className="my-3 col-4">
-                  <div className="h6">Password Ibanking</div>
+                  <div className="h6">Password iBanking</div>
                   <div>{mainDataDetail.password_ibanking}</div>
                 </div>
+              </>
+            )}
+            <div className="my-3 col-4">
+              <div className="h6">Active Period</div>
+              <div>
+                {mainDataDetail.active_period
+                  ? dateConvertToDMY(mainDataDetail.active_period)
+                  : '-'}
+              </div>
+            </div>
+            {mainDataDetail.account_type_id?.category === 'rekening' && (
+              <>
                 <div className="my-3 col-4">
-                  <div className="h6">Pin Token Ibanking</div>
+                  <div className="h6">PIN Token iBanking</div>
                   <div>{mainDataDetail.pin_token_ibanking}</div>
                 </div>
               </>
@@ -357,11 +401,12 @@ export default function MainData() {
               <div>{mainDataDetail.remark ? mainDataDetail.remark : '-'}</div>
             </div>
           </div>
+          <hr />
           <div className="d-flex justify-content-between flex-wrap">
             <div className="my-3 col-4">
               <div className="h6">Photo KTP</div>
               <img
-                src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.ktp_photo_url}`}
+                src={`${ASSET_URL}/${mainDataDetail.ktp_photo_url}`}
                 className="col-10"
                 onClick={() => {
                   setAssetName(mainDataDetail.ktp_photo_url);
@@ -371,25 +416,29 @@ export default function MainData() {
             <div className="my-3 col-4">
               <div className="h6">Photo Selfie</div>
               <img
-                src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.selfie_photo_url}`}
+                src={`${ASSET_URL}/${mainDataDetail.selfie_photo_url}`}
                 className="col-10"
                 onClick={() => {
-                  setAssetName(mainDataDetail.ktp_photo_url);
+                  setAssetName(mainDataDetail.selfie_photo_url);
                 }}
               />
             </div>
             <div className="my-3 col-4">
               <div className="h6">Video Verification</div>
-              <video src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.video_verification_url}`} className="col-10" controls />
+              <video
+                src={`${ASSET_URL}/${mainDataDetail.video_verification_url}`}
+                className="col-10"
+                controls
+              />
             </div>
           </div>
-          <div className="d-flex justify-content-between flex-wrap">
+          <div className="d-flex flex-wrap">
             {mainDataDetail.another_file_1_url && (
               <div className="my-3 col-4">
                 <div className="h6">Another File 1</div>
                 {mainDataDetail.another_file_1_url[0] === 'I' && (
                   <img
-                    src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_1_url}`}
+                    src={`${ASSET_URL}/${mainDataDetail.another_file_1_url}`}
                     className="col-10"
                     onClick={() => {
                       setAssetName(mainDataDetail.another_file_1_url);
@@ -397,7 +446,11 @@ export default function MainData() {
                   />
                 )}
                 {mainDataDetail.another_file_1_url[0] === 'V' && (
-                  <video src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_1_url}`} className="col-10" controls />
+                  <video
+                    src={`${ASSET_URL}/${mainDataDetail.another_file_1_url}`}
+                    className="col-10"
+                    controls
+                  />
                 )}
               </div>
             )}
@@ -406,15 +459,19 @@ export default function MainData() {
                 <div className="h6">Another File 2</div>
                 {mainDataDetail.another_file_2_url[0] === 'I' && (
                   <img
-                    src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_2_url}`}
+                    src={`${ASSET_URL}/${mainDataDetail.another_file_2_url}`}
                     className="col-10"
                     onClick={() => {
-                      setAssetName(mainDataDetail.ktp_photo_url);
+                      setAssetName(mainDataDetail.another_file_2_url);
                     }}
                   />
                 )}
                 {mainDataDetail.another_file_2_url[0] === 'V' && (
-                  <video src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_2_url}`} className="col-10" controls />
+                  <video
+                    src={`${ASSET_URL}/${mainDataDetail.another_file_2_url}`}
+                    className="col-10"
+                    controls
+                  />
                 )}
               </div>
             )}
@@ -423,7 +480,7 @@ export default function MainData() {
                 <div className="h6">Another File 3</div>
                 {mainDataDetail.another_file_3_url[0] === 'I' && (
                   <img
-                    src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_3_url}`}
+                    src={`${ASSET_URL}/${mainDataDetail.another_file_3_url}`}
                     className="col-10"
                     onClick={() => {
                       setAssetName(mainDataDetail.another_file_3_url);
@@ -431,7 +488,11 @@ export default function MainData() {
                   />
                 )}
                 {mainDataDetail.another_file_3_url[0] === 'V' && (
-                  <video src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_3_url}`} className="col-10" controls />
+                  <video
+                    src={`${ASSET_URL}/${mainDataDetail.another_file_3_url}`}
+                    className="col-10"
+                    controls
+                  />
                 )}
               </div>
             )}
@@ -440,7 +501,7 @@ export default function MainData() {
                 <div className="h6">Another File 4</div>
                 {mainDataDetail.another_file_4_url[0] === 'I' && (
                   <img
-                    src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_4_url}`}
+                    src={`${ASSET_URL}/${mainDataDetail.another_file_4_url}`}
                     className="col-10"
                     onClick={() => {
                       setAssetName(mainDataDetail.another_file_4_url);
@@ -448,16 +509,20 @@ export default function MainData() {
                   />
                 )}
                 {mainDataDetail.another_file_4_url[0] === 'V' && (
-                  <video src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_4_url}`} className="col-10" controls />
+                  <video
+                    src={`${ASSET_URL}/${mainDataDetail.another_file_4_url}`}
+                    className="col-10"
+                    controls
+                  />
                 )}
               </div>
             )}
             {mainDataDetail.another_file_5_url && (
               <div className="my-3 col-4">
                 <div className="h6">Another File 5</div>
-                {mainDataDetail.another_file_4_url[0] === 'I' && (
+                {mainDataDetail.another_file_5_url[0] === 'I' && (
                   <img
-                    src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_5_url}`}
+                    src={`${ASSET_URL}/${mainDataDetail.another_file_5_url}`}
                     className="col-10"
                     onClick={() => {
                       setAssetName(mainDataDetail.another_file_5_url);
@@ -465,7 +530,11 @@ export default function MainData() {
                   />
                 )}
                 {mainDataDetail.another_file_5_url[0] === 'V' && (
-                  <video src={`${API_BASE_URL}/main-data/asset/${mainDataDetail.another_file_5_url}`} className="col-10" controls />
+                  <video
+                    src={`${ASSET_URL}/${mainDataDetail.another_file_5_url}`}
+                    className="col-10"
+                    controls
+                  />
                 )}
               </div>
             )}
@@ -474,7 +543,9 @@ export default function MainData() {
       </CModal>
       {assetName && (
         <div className="backdrop-container">
-          {assetName[0] === 'I' && <img src={`${API_BASE_URL}/main-data/asset/${assetName}`} style={{ height: '80%' }} />}
+          {assetName[0] === 'I' && (
+            <img src={`${ASSET_URL}/${assetName}`} style={{ height: '80%' }} />
+          )}
           <div
             className="backdrop-bg"
             onClick={() => {

@@ -8,7 +8,6 @@ import {
   CFormSelect,
   CFormTextarea,
   CInputGroup,
-  CInputGroupText,
   CModal,
   CModalBody,
   CModalFooter,
@@ -18,26 +17,28 @@ import {
 } from '@coreui/react';
 import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { getAccountTypeList } from 'src/services/accountType';
 import { checkDownlineCode } from 'src/services/downline';
-import { createMainData } from 'src/services/mainDataApi';
-import { ccNumber } from 'src/shared/helpers/ccFormat';
+import {
+  createMainData,
+  getMainDataDetail,
+  updateMainData
+} from 'src/services/mainDataApi';
+import { ccNumber, expFormat } from 'src/shared/helpers/ccFormat';
 import * as yup from 'yup';
 import NotFoundImage from 'src/assets/images/freepik-page-not-found.png';
-import { toast } from 'react-hot-toast';
+import { dateConvertToYMD } from 'src/shared/helpers/dateHelper';
 
 export default function Form() {
   const [walletType, setWalletType] = useState('rekening');
   const [accountTypeList, setAccountTypeList] = useState([]);
-  const [downlineId, setDownlineId] = useState('');
   const [anotherFile1, setAnotherFile1] = useState();
   const [anotherFile2, setAnotherFile2] = useState();
   const [anotherFile3, setAnotherFile3] = useState();
   const [anotherFile4, setAnotherFile4] = useState();
   const [anotherFile5, setAnotherFile5] = useState();
   const [activePeriod, setActivePeriod] = useState('');
-  const [remark, setRemark] = useState('');
   const [showForm, setShowForm] = useState(false);
 
   // Modal
@@ -50,6 +51,10 @@ export default function Form() {
 
   const [searchParams] = useSearchParams();
   const downline_code = searchParams.get('downline_code');
+  const edit = searchParams.get('edit');
+  const mainDataId = searchParams.get('main_data_id');
+  const { state } = useLocation();
+  const navigate = useNavigate();
 
   let schema = yup.object().shape({});
 
@@ -64,16 +69,8 @@ export default function Form() {
         .required('Phone Number is required')
         .min(8, 'Phone number must be valid and contain 8 - 13 digits')
         .max(13, 'Phone number must be valid and contain 8 - 13 digits'),
-      ktp_number: yup
-        .string()
-        .required('KTP is required')
-        .min(16, 'Min and Max is 16 digits')
-        .max(16, 'Min and Max is 16 digits'),
-      kk_number: yup
-        .string()
-        .required('KK is required')
-        .min(16, 'Min and Max is 16 digits')
-        .max(16, 'Min and Max is 16 digits'),
+      ktp_number: yup.string().required('KTP is required'),
+      kk_number: yup.string().required('KK is required'),
       mother_name: yup.string().required('Mother Name is required'),
       full_ktp_address: yup.string().required('KTP Address is required'),
       bank_branch: yup.string().required('Bank branch is required'),
@@ -90,10 +87,7 @@ export default function Form() {
         .string()
         .required('Transaction Password is required'),
       username_ibanking: yup.string().required('Username Ibanking is required'),
-      password_ibanking: yup.string().required('Password Ibanking is required'),
-      pin_token_ibanking: yup
-        .string()
-        .required('Pin Token Ibanking is required')
+      password_ibanking: yup.string().required('Password Ibanking is required')
     });
   } else {
     schema = yup.object().shape({
@@ -102,16 +96,8 @@ export default function Form() {
       name: yup.string().required('Name is required'),
       account_type_id: yup.string().required('Account Type is required'),
       phone_number: yup.string().required('Phone Number is required'),
-      ktp_number: yup
-        .string()
-        .required('KTP is required')
-        .min(16, 'Min and Max is 16 digits')
-        .max(16, 'Min and Max is 16 digits'),
-      kk_number: yup
-        .string()
-        .required('KK is required')
-        .min(16, 'Min and Max is 16 digits')
-        .max(16, 'Min and Max is 16 digits'),
+      ktp_number: yup.string().required('KTP is required'),
+      kk_number: yup.string().required('KK is required'),
       mother_name: yup.string().required('Mother Name is required'),
       email: yup.string().required('Email is required'),
       email_password: yup.string().required('Email Password is required'),
@@ -155,7 +141,9 @@ export default function Form() {
   });
 
   useEffect(() => {
-    setErrorForm(formik.errors);
+    if (Object.keys(formik.errors).length > 0 && formik.isSubmitting) {
+      setErrorForm(formik.errors);
+    }
   }, [formik]);
 
   const walletTypeHandle = (type) => {
@@ -171,7 +159,6 @@ export default function Form() {
   const fetchCheckDownline = () => {
     checkDownlineCode(downline_code)
       .then((res) => {
-        setDownlineId(res?.data?.id);
         setShowForm(true);
       })
       .catch(() => {});
@@ -190,7 +177,6 @@ export default function Form() {
   const submitMainData = () => {
     const body = {
       account_type_id: formik.values.account_type_id,
-      // downline_id: downlineId,
       name: formik.values.name,
       phone_number: formik.values.phone_number,
       ktp_number: formik.values.ktp_number,
@@ -201,7 +187,9 @@ export default function Form() {
       email: formik.values.email,
       email_password: formik.values.email_password,
       card_number: formik.values.card_number.replace(/\s/g, ''),
-      exp_date: formik.values.exp_date,
+      exp_date: formik.values.exp_date
+        ? formik.values.exp_date.split('/').join('')
+        : '',
       access_code: formik.values.access_code,
       mbanking_password: formik.values.mbanking_password,
       pin: formik.values.pin,
@@ -211,24 +199,21 @@ export default function Form() {
       username_ibanking: formik.values.username_ibanking,
       password_ibanking: formik.values.password_ibanking,
       pin_token_ibanking: formik.values.pin_token_ibanking,
-      ktp_photo_url: formik.values.ktp_photo_url,
-      selfie_photo_url: formik.values.selfie_photo_url,
-      video_verification_url: formik.values.video_verification_url,
       active_period: activePeriod,
-      remark
+      remark: formik.values.remark
     };
 
     let isError = false;
-    // let phoneTemp = formik.values.phone_number;
-    // if (phoneTemp[0] == 0) {
-    //   body.phone_number = '62' + phoneTemp.slice(1, phoneTemp.length);
-    // } else if (phoneTemp[0] == 8) {
-    //   body.phone_number = '62' + phoneTemp;
-    // } else {
-    // isError = true;
-    // toast.error('Invalid phone number format');
-    // }
 
+    if (formik.values.ktp_photo_url) {
+      body.ktp_photo_url = formik.values.ktp_photo_url;
+    }
+    if (formik.values.selfie_photo_url) {
+      body.selfie_photo_url = formik.values.selfie_photo_url;
+    }
+    if (formik.values.video_verification_url) {
+      body.video_verification_url = formik.values.video_verification_url;
+    }
     if (anotherFile1) {
       body.another_file_1_url = anotherFile1;
     }
@@ -245,8 +230,13 @@ export default function Form() {
       body.another_file_5_url = anotherFile5;
     }
 
-    if (!isError) {
+    if (!isError && !edit) {
       createMainData(downline_code, body).then(() => {});
+    } else if (!isError && edit) {
+      body.status = 'waiting';
+      updateMainData(mainDataId ? mainDataId : state.id, body).then((res) => {
+        navigate('/admin/main-data');
+      });
     }
   };
 
@@ -254,6 +244,28 @@ export default function Form() {
     formik.setErrors({});
     formik.setTouched({}, false);
   };
+
+  const fetchDetailMainData = () => {
+    getMainDataDetail(mainDataId)
+      .then((res) => {
+        const data = res.data;
+        formik.setValues(data.result);
+        setWalletType(data.result.account_type_id.category);
+        formik.setFieldValue('account_type_id', data.result.account_type_id.id);
+        formik.setFieldValue('ktp_photo_url', '');
+        formik.setFieldValue('selfie_photo_url', '');
+        formik.setFieldValue('video_verification_url', '');
+        formik.setFieldValue('card_number', data.result.card_number);
+        setActivePeriod(dateConvertToYMD(data.result.active_period));
+      })
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    if (mainDataId && edit) {
+      fetchDetailMainData();
+    }
+  }, [edit, mainDataId]);
 
   return (
     <>
@@ -272,9 +284,11 @@ export default function Form() {
                       walletType === 'rekening' ? 'btn btn-info border-0' : ''
                     }`}
                     onClick={() => {
-                      walletTypeHandle('rekening');
-                      formik.setFieldValue('account_type_id', '');
-                      clearErrorFormik();
+                      if (!edit && !mainDataId) {
+                        walletTypeHandle('rekening');
+                        formik.setFieldValue('account_type_id', '');
+                        clearErrorFormik();
+                      }
                     }}
                   >
                     Rekening
@@ -285,9 +299,11 @@ export default function Form() {
                       walletType === 'e-wallet' ? 'btn btn-info r border-0' : ''
                     }`}
                     onClick={() => {
-                      walletTypeHandle('e-wallet');
-                      formik.setFieldValue('account_type_id', '');
-                      clearErrorFormik();
+                      if (!edit && !mainDataId) {
+                        walletTypeHandle('e-wallet');
+                        formik.setFieldValue('account_type_id', '');
+                        clearErrorFormik();
+                      }
                     }}
                   >
                     E-Wallet
@@ -300,6 +316,7 @@ export default function Form() {
                         Akun Tipe <span className="text-danger">*</span>
                       </CFormLabel>
                       <CFormSelect
+                        value={formik.values.account_type_id}
                         onChange={(e) => {
                           formik.setFieldValue(
                             'account_type_id',
@@ -326,6 +343,7 @@ export default function Form() {
                       </CFormLabel>
                       <CFormInput
                         placeholder="Sumiyati"
+                        value={formik.values.name}
                         required
                         onChange={(e) => {
                           formik.setFieldValue('name', e.target.value);
@@ -344,9 +362,10 @@ export default function Form() {
                           62
                         </CInputGroupText> */}
                         <CFormInput
-                          placeholder="62856999888"
-                          type="number"
+                          placeholder="0856999888"
+                          type="text"
                           required
+                          value={formik.values.phone_number}
                           onChange={(e) => {
                             formik.setFieldValue(
                               'phone_number',
@@ -365,6 +384,7 @@ export default function Form() {
                           Nomor KTP <span className="text-danger">*</span>
                         </CFormLabel>
                         <CFormInput
+                          value={formik.values.ktp_number}
                           placeholder="20101234567890123"
                           type="number"
                           required
@@ -382,6 +402,7 @@ export default function Form() {
                           Nomor KK <span className="text-danger">*</span>
                         </CFormLabel>
                         <CFormInput
+                          value={formik.values.kk_number}
                           placeholder="20101234567890123"
                           type="number"
                           required
@@ -399,6 +420,7 @@ export default function Form() {
                         Nama Ibu <span className="text-danger">*</span>
                       </CFormLabel>
                       <CFormInput
+                        value={formik.values.mother_name}
                         placeholder="Madonna"
                         type="text"
                         required
@@ -416,6 +438,7 @@ export default function Form() {
                           Alamat KTP <span className="text-danger">*</span>
                         </CFormLabel>
                         <CFormTextarea
+                          value={formik.values.full_ktp_address}
                           placeholder="Jl. Pisang Raya No. 12 Jakarta Barat 002/003"
                           type="text"
                           required
@@ -437,6 +460,7 @@ export default function Form() {
                           Bank Cabang <span className="text-danger">*</span>
                         </CFormLabel>
                         <CFormInput
+                          value={formik.values.bank_branch}
                           placeholder="Kab. Tangerang"
                           type="text"
                           required
@@ -455,6 +479,7 @@ export default function Form() {
                           Email <span className="text-danger">*</span>
                         </CFormLabel>
                         <CFormInput
+                          value={formik.values.email}
                           placeholder="sumiyati@gmail.com"
                           type="email"
                           required
@@ -472,6 +497,7 @@ export default function Form() {
                           <span className="text-danger">*</span>
                         </CFormLabel>
                         <CFormInput
+                          value={formik.values.email_password}
                           placeholder="Kata Sandi Email"
                           type="text"
                           required
@@ -515,6 +541,7 @@ export default function Form() {
                             <span className="text-danger">*</span>
                           </CFormLabel>
                           <CFormInput
+                            value={expFormat(formik.values.exp_date)}
                             placeholder="12/26"
                             maxLength={5}
                             type="text"
@@ -536,6 +563,7 @@ export default function Form() {
                             Akses Kode <span className="text-danger">*</span>
                           </CFormLabel>
                           <CFormInput
+                            value={formik.values.access_code}
                             placeholder="sumiyati99"
                             type="text"
                             required
@@ -552,10 +580,11 @@ export default function Form() {
                         </div>
                         <div className="mb-3 ps-2">
                           <CFormLabel>
-                            Kata Sandi Mbanking{' '}
+                            Kata Sandi MBanking{' '}
                             <span className="text-danger">*</span>
                           </CFormLabel>
                           <CFormInput
+                            value={formik.values.mbanking_password}
                             placeholder="sumiyaticantik123"
                             type="text"
                             required
@@ -574,9 +603,11 @@ export default function Form() {
                     )}
                     <div className="mb-3">
                       <CFormLabel>
-                        Pin ATM <span className="text-danger">*</span>
+                        PIN {walletType == 'rekening' && 'ATM'}{' '}
+                        <span className="text-danger">*</span>
                       </CFormLabel>
                       <CFormInput
+                        value={formik.values.pin}
                         placeholder="123456"
                         type="number"
                         required
@@ -591,10 +622,10 @@ export default function Form() {
                         <div className="d-flex">
                           <div className="mb-3 pe-2">
                             <CFormLabel>
-                              Nama Pengguna Aplikasi{' '}
-                              <span className="text-danger">*</span>
+                              Username <span className="text-danger">*</span>
                             </CFormLabel>
                             <CFormInput
+                              value={formik.values.username_acct}
                               placeholder="suminati2023"
                               type="text"
                               required
@@ -614,10 +645,10 @@ export default function Form() {
                           </div>
                           <div className="mb-3 ps-2">
                             <CFormLabel>
-                              Kata Sandi Aplikasi{' '}
-                              <span className="text-danger">*</span>
+                              Password <span className="text-danger">*</span>
                             </CFormLabel>
                             <CFormInput
+                              value={formik.values.password_acct}
                               placeholder="sumiyati0003"
                               type="text"
                               required
@@ -636,10 +667,10 @@ export default function Form() {
 
                         <div className="mb-3">
                           <CFormLabel>
-                            Kata Sandi Transaksaksi Aplikasi{' '}
-                            <span className="text-danger">*</span>
+                            PIN Transaksi <span className="text-danger">*</span>
                           </CFormLabel>
                           <CFormInput
+                            value={formik.values.transaction_password_acct}
                             placeholder="sumiatibca2023"
                             type="text"
                             required
@@ -657,10 +688,11 @@ export default function Form() {
                         <div className="d-flex">
                           <div className="mb-3 pe-2">
                             <CFormLabel>
-                              Nama Pengguna iBanking{' '}
+                              Nama di iBanking{' '}
                               <span className="text-danger">*</span>
                             </CFormLabel>
                             <CFormInput
+                              value={formik.values.username_ibanking}
                               placeholder="sumsum1902"
                               type="text"
                               required
@@ -681,9 +713,9 @@ export default function Form() {
                               <span className="text-danger">*</span>
                             </CFormLabel>
                             <CFormInput
+                              value={formik.values.password_ibanking}
                               placeholder="998899"
                               type="text"
-                              required
                               onChange={(e) => {
                                 formik.setFieldValue(
                                   'password_ibanking',
@@ -697,11 +729,9 @@ export default function Form() {
                           </div>
                         </div>
                         <div className="mb-3">
-                          <CFormLabel>
-                            Pin Token iBanking{' '}
-                            <span className="text-danger">*</span>
-                          </CFormLabel>
+                          <CFormLabel>PIN Token iBanking</CFormLabel>
                           <CFormInput
+                            value={formik.values.pin_token_ibanking}
                             placeholder="2309293"
                             type="text"
                             required
@@ -721,20 +751,25 @@ export default function Form() {
                     <div className="mb-3">
                       <CFormLabel>Masa Aktif</CFormLabel>
                       <CFormInput
+                        value={dateConvertToYMD(activePeriod)}
                         placeholder="Masa Aktif"
                         type="date"
                         required
                         onChange={(e) => {
                           setActivePeriod(e.target.value);
+                          // formik.setFieldValue(
+                          //   'active_period',
+                          //   formik.values.active_period
+                          // );
                         }}
                       />
                     </div>
                     <div className="mb-3">
                       <CFormLabel>Tambahan</CFormLabel>
                       <CFormTextarea
-                        required
+                        value={formik.values.remark}
                         onChange={(e) => {
-                          setRemark(e.target.value);
+                          formik.setFieldValue('remark', e.target.value);
                         }}
                       />
                     </div>

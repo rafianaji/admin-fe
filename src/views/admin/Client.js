@@ -296,7 +296,7 @@ export default function Client() {
                   <CInputGroup>
                     {/* <CInputGroupText className="secondary">62</CInputGroupText> */}
                     <CFormInput
-                      type="number"
+                      type="text"
                       placeholder="62856999888"
                       value={phoneFilter}
                       onChange={(e) => {
@@ -342,7 +342,7 @@ export default function Client() {
         </CButton>
         {clientList && (
           <>
-            <CTable>
+            <CTable responsive>
               <CTableHead>
                 <CTableRow>
                   <CTableHeaderCell scope="col">No.</CTableHeaderCell>
@@ -371,10 +371,13 @@ export default function Client() {
                           formik.setErrors({});
                           formik.setValues({
                             name: el.name,
-                            phone: el.phone.slice(2, el.phone.length),
+                            phone: el.phone,
                             email: el.email,
                             color: el.color,
-                            password: 'aaa'
+                            password: 'aaa',
+                            plain_password: el.plain_password
+                              ? el.plain_password
+                              : ''
                           });
                         }}
                       >
@@ -438,6 +441,9 @@ export default function Client() {
                             formik.setFieldValue('name', e.target.value);
                           }}
                         />
+                        <div className="text-danger text-sm">
+                          {errorForm.name}
+                        </div>
                       </CCol>
                     </CRow>
                     <CRow className="mb-3">
@@ -446,18 +452,18 @@ export default function Client() {
                       </CFormLabel>
                       <CCol>
                         <CInputGroup>
-                          {/* <CInputGroupText className="secondary">
-                            62
-                          </CInputGroupText> */}
                           <CFormInput
                             placeholder="62856999888"
-                            type="number"
+                            type="text"
                             value={formik.values.phone}
                             onChange={(e) => {
                               formik.setFieldValue('phone', e.target.value);
                             }}
                           />
                         </CInputGroup>
+                        <div className="text-danger text-sm">
+                          {errorForm.phone}
+                        </div>
                       </CCol>
                     </CRow>
                     <CRow className="mb-3">
@@ -488,7 +494,7 @@ export default function Client() {
                           </CButton>
                         </CInputGroup>
                         <div className="text-danger text-sm">
-                          {errorForm.password}
+                          {errorForm.plain_password}
                         </div>
                       </CCol>
                     </CRow>
@@ -503,6 +509,9 @@ export default function Client() {
                             formik.setFieldValue('email', e.target.value);
                           }}
                         />
+                        <div className="text-danger text-sm">
+                          {errorForm.email}
+                        </div>
                       </CCol>
                     </CRow>
                     <CRow className="mb-3">
@@ -556,7 +565,7 @@ export default function Client() {
                           </CInputGroupText> */}
                           <CFormInput
                             placeholder="62856999888"
-                            type="number"
+                            type="text"
                             required
                             value={formik.values.phone}
                             onChange={(e) => {

@@ -3,6 +3,11 @@ import { CNavItem } from '@coreui/react';
 const adminNav = [
   {
     component: CNavItem,
+    name: 'Dashboard',
+    to: '/admin/dashboard'
+  },
+  {
+    component: CNavItem,
     name: 'Main Data',
     to: '/admin/main-data',
     items: [

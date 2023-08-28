@@ -232,7 +232,7 @@ export default function AccountType() {
         </CButton>
         {AccountTypeList && (
           <>
-            <CTable>
+            <CTable responsive>
               <CTableHead>
                 <CTableRow>
                   <CTableHeaderCell scope="col">No.</CTableHeaderCell>

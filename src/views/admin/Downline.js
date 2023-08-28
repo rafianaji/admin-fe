@@ -152,15 +152,6 @@ export default function Downline() {
       email: formik.values.email,
       phone: formik.values.phone
     };
-    // let phoneTemp = formik.values.phone;
-    // if (phoneTemp[0] == 0) {
-    //   body.phone = '62' + phoneTemp.slice(1, phoneTemp.length);
-    // } else if (phoneTemp[0] == 8) {
-    //   body.phone = '62' + phoneTemp;
-    // } else {
-    //   isError = true;
-    //   toast.error('Invalid phone number format');
-    // }
 
     if (!isError) {
       createDownline(body).then(() => {
@@ -180,18 +171,6 @@ export default function Downline() {
       email: formik.values.email,
       phone: formik.values.phone
     };
-    // let phoneTemp = formik.values.phone;
-    // if (phoneTemp[0] == 0) {
-    //   body.phone = '62' + phoneTemp.slice(1, phoneTemp.length);
-    // } else if (phoneTemp[0] == 8) {
-    //   body.phone = '62' + phoneTemp;
-    // } else if (phoneTemp.slice(0, 2) == '62') {
-    //   body.phone = phoneTemp;
-    // } else {
-    //   isError = true;
-    //   toast.error('Invalid phone number format');
-    // }
-
     if (!isError) {
       updateDownline(downlineDetail.id, body).then(() => {
         onCloseModalHandle();
@@ -287,9 +266,8 @@ export default function Downline() {
                 </CFormLabel>
                 <CCol>
                   <CInputGroup>
-                    {/* <CInputGroupText className="secondary">62</CInputGroupText> */}
                     <CFormInput
-                      type="number"
+                      type="text"
                       placeholder="62856999888"
                       value={phoneFilter}
                       onChange={(e) => {
@@ -333,7 +311,7 @@ export default function Downline() {
         </CButton>
         {downlineList && (
           <>
-            <CTable>
+            <CTable responsive>
               <CTableHead>
                 <CTableRow>
                   <CTableHeaderCell scope="col">No.</CTableHeaderCell>
@@ -361,7 +339,7 @@ export default function Downline() {
                       >
                         <CButton
                           size="sm"
-                          color="info"
+                          color="primary"
                           className="ms-2"
                           onClick={() => {}}
                         >
@@ -389,7 +367,7 @@ export default function Downline() {
                           formik.setErrors({});
                           formik.setValues({
                             name: el.name,
-                            phone: el.phone.slice(2, el.phone.length),
+                            phone: el.phone,
                             email: el.email
                           });
                         }}
@@ -493,12 +471,9 @@ export default function Downline() {
                       </CFormLabel>
                       <CCol>
                         <CInputGroup>
-                          {/* <CInputGroupText className="secondary">
-                            62
-                          </CInputGroupText> */}
                           <CFormInput
                             placeholder="62856999888"
-                            type="number"
+                            type="text"
                             value={formik.values.phone}
                             onChange={(e) => {
                               formik.setFieldValue('phone', e.target.value);
@@ -564,12 +539,9 @@ export default function Downline() {
                       </CFormLabel>
                       <CCol>
                         <CInputGroup>
-                          {/* <CInputGroupText className="secondary">
-                            62
-                          </CInputGroupText> */}
                           <CFormInput
                             placeholder="856999888"
-                            type="number"
+                            type="text"
                             required
                             value={formik.values.phone}
                             onChange={(e) => {

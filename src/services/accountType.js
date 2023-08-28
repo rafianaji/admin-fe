@@ -5,7 +5,7 @@ export async function getAccountTypeList(params) {
     return await axiosSetup({
       method: 'GET',
       url: '/account-type',
-      params,
+      params
     });
   } catch (error) {
     throw error;
@@ -17,7 +17,7 @@ export async function createAccountType(body) {
     return await axiosSetup({
       method: 'POST',
       url: '/account-type',
-      data: body,
+      data: body
     });
   } catch (error) {
     throw error;
@@ -29,7 +29,7 @@ export async function updateAccountType(id, body) {
     return await axiosSetup({
       method: 'PUT',
       url: `/account-type/${id}`,
-      data: body,
+      data: body
     });
   } catch (error) {
     throw error;
@@ -40,7 +40,7 @@ export async function deleteAccountType(id) {
   try {
     return await axiosSetup({
       method: 'DELETE',
-      url: `/account-type/${id}`,
+      url: `/account-type/${id}`
     });
   } catch (error) {
     throw error;

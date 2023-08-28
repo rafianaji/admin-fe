@@ -16,6 +16,10 @@ $enable-rtl: true;
 // If you want to add custom CSS you can put it here.
 @import 'custom';
 
+* {
+  font-family: 'Poppins', sans-serif !important;
+}
+
 .full-width {
   width: 100% !important;
 }
@@ -48,6 +52,49 @@ $enable-rtl: true;
   cursor: pointer;
 }
 
+.bg-pink {
+  background-color: #e417ff;
+}
+
+.bg-aqua {
+  background-color: #00f7ff;
+}
+
+.bg-yellow {
+  background-color: #fbff40;
+}
+
+.width-dashboard {
+  width: 32% !important;
+  box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px !important;
+  border-radius: 16px;
+}
+
+.dashboard-blue {
+  background-color: #1daae6;
+  color: #fff !important;
+}
+
+.dashboard-purple {
+  background-color: #6318c3;
+  color: #fff !important;
+}
+
+.dashboard-orange {
+  background-color: #ff8139;
+  color: #fff !important;
+}
+
+.dashboard-grey {
+  background-color: #414955;
+  color: #fff !important;
+}
+
+.dashboard-green {
+  background-color: #2bc155;
+  color: #fff !important;
+}
+
 .loader-spinner {
   position: absolute;
   left: 50%;
@@ -64,7 +111,7 @@ $enable-rtl: true;
 }
 
 #loader-spinner {
-  display: none !important;
+  display: none;
 }
 
 @-webkit-keyframes spin {
