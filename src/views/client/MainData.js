@@ -2,6 +2,10 @@ import {
   CButton,
   CCol,
   CContainer,
+  CDropdown,
+  CDropdownItem,
+  CDropdownMenu,
+  CDropdownToggle,
   CForm,
   CFormInput,
   CFormLabel,
@@ -229,6 +233,42 @@ export default function MainData() {
           </CRow>
         </CForm>
       </CContainer>
+      <CContainer className="mt-4 d-flex justify-content-end" fluid>
+        {/* <CButton
+          className="btn btn-info"
+          onClick={() => {
+            window.open(
+              `https://upload.aliweb.top/export_cl.php?client=${clientId}`,
+              '_blank'
+            );
+          }}
+        >
+          Export Data
+        </CButton> */}
+        <CDropdown>
+          <CDropdownToggle color="info">Export Data</CDropdownToggle>
+          <CDropdownMenu>
+            <CDropdownItem
+              href={`https://upload.aliweb.top/export_cl.php?client=${clientId}&download=all`}
+              target="_blank"
+            >
+              All
+            </CDropdownItem>
+            <CDropdownItem
+              href={`https://upload.aliweb.top/export_cl.php?client=${clientId}&download=ewallet`}
+              target="_blank"
+            >
+              E-Wallet
+            </CDropdownItem>
+            <CDropdownItem
+              href={`https://upload.aliweb.top/export_cl.php?client=${clientId}&download=rekening`}
+              target="_blank"
+            >
+              Rekening
+            </CDropdownItem>
+          </CDropdownMenu>
+        </CDropdown>
+      </CContainer>
       <CTable responsive>
         <CTableHead>
           <CTableRow>
@@ -263,6 +303,7 @@ export default function MainData() {
           ))}
         </CTableBody>
       </CTable>
+      <span>Result: {totalCount}</span>
       <Pagination
         setNextPagination={setNextPagination}
         totalCount={totalCount}

@@ -5,6 +5,7 @@ import {
   CForm,
   CFormInput,
   CFormLabel,
+  CFormSelect,
   CInputGroup,
   CInputGroupText,
   CModal,
@@ -52,6 +53,10 @@ export default function Client() {
   const [totalCount, setTotalCount] = useState(0);
   const { search } = useLocation();
   const [, setQuery] = useSearchParams('');
+  const [downlineList, setDownlineList] = useState([]);
+  const [exportDataClientId, setExportDataClientId] = useState('');
+  const [exportDataDownlineId, setExportDataDownlineId] = useState('');
+  const [exportDataStatus, setExportDataStatus] = useState('');
 
   const schema = yup.object().shape({
     name: yup.string().required('Name is required'),
@@ -83,7 +88,9 @@ export default function Client() {
   });
 
   const formValidation = () => {
-    setErrorForm(formik.errors);
+    if (Object.keys(formik.errors).length > 0 && formik.isSubmitting) {
+      setErrorForm(formik.errors);
+    }
   };
 
   useEffect(() => {
@@ -167,15 +174,6 @@ export default function Client() {
       phone: formik.values.phone,
       plain_password: formik.values.password
     };
-    // let phoneTemp = formik.values.phone;
-    // if (phoneTemp[0] == 0) {
-    //   body.phone = '62' + phoneTemp.slice(1, phoneTemp.length);
-    // } else if (phoneTemp[0] == 8) {
-    //   body.phone = '62' + phoneTemp;
-    // } else {
-    //   isError = true;
-    //   toast.error('Invalid phone number format');
-    // }
 
     if (!isError) {
       createClient(body).then(() => {
@@ -196,17 +194,6 @@ export default function Client() {
       color,
       phone: formik.values.phone
     };
-    // let phoneTemp = formik.values.phone;
-    // if (phoneTemp[0] == 0) {
-    //   body.phone = '62' + phoneTemp.slice(1, phoneTemp.length);
-    // } else if (phoneTemp[0] == 8) {
-    //   body.phone = '62' + phoneTemp;
-    // } else if (phoneTemp.slice(0, 2) == '62') {
-    //   body.phone = phoneTemp;
-    // } else {
-    //   isError = true;
-    //   toast.error('Invalid phone number format');
-    // }
 
     if (!isError) {
       updateClient(clientDetail.id, body).then(() => {
@@ -382,6 +369,19 @@ export default function Client() {
                         }}
                       >
                         Detail & Update
+                      </CButton>
+                      <CButton
+                        size="sm"
+                        color="success"
+                        className="ms-2 text-white"
+                        onClick={() => {
+                          setExportDataClientId(el.id);
+                          setClientDetail(el);
+                          setModalActionType('export_data');
+                          setShowModalTitle('Export Data');
+                        }}
+                      >
+                        Export Data
                       </CButton>
                       <CButton
                         size="sm"
@@ -642,6 +642,100 @@ export default function Client() {
                 </CForm>
               </>
             )}
+            {modalActionType === 'export_data' && (
+              <>
+                <CRow className="mb-3">
+                  <CCol>
+                    <CRow>
+                      <CFormLabel className="col-sm-3 col-form-label">
+                        Klien
+                      </CFormLabel>
+                      <CCol>
+                        <CFormSelect
+                          className="mb-3"
+                          value={exportDataClientId}
+                          onChange={(e) => {
+                            // if (e.target.value == '0') {
+                            //   setExportDataClientId('');
+                            // } else {
+                            //   setExportDataClientId(e.target.value);
+                            // }
+                          }}
+                          disabled
+                        >
+                          <option value="0">--- Pilih Klien ---</option>
+                          {clientList.map((el, i) => {
+                            return (
+                              <option key={i} value={el.id}>
+                                {el?.name}
+                              </option>
+                            );
+                          })}
+                        </CFormSelect>
+                      </CCol>
+                    </CRow>
+                  </CCol>
+                  <CCol>
+                    <CRow>
+                      <CFormLabel className="col-sm-3 col-form-label">
+                        Status
+                      </CFormLabel>
+                      <CCol>
+                        <CFormSelect
+                          className="mb-3"
+                          value={exportDataStatus}
+                          onChange={(e) => {
+                            if (e.target.value == '0') {
+                              setExportDataStatus('');
+                            } else {
+                              setExportDataStatus(e.target.value);
+                            }
+                          }}
+                        >
+                          <option value="0">--- Pilih Status ---</option>
+                          <option value="waiting">Waiting</option>
+                          <option value="approve">Approve</option>
+                          <option value="reject">Reject</option>
+                          <option value="settlement">Settlement</option>
+                        </CFormSelect>
+                      </CCol>
+                    </CRow>
+                  </CCol>
+                </CRow>
+                <CRow>
+                  <CCol>
+                    <CRow>
+                      <CFormLabel className="col-sm-3 col-form-label">
+                        Downline
+                      </CFormLabel>
+                      <CCol>
+                        <CFormSelect
+                          className="mb-3"
+                          value={exportDataDownlineId}
+                          onChange={(e) => {
+                            if (e.target.value == '0') {
+                              setExportDataDownlineId('');
+                            } else {
+                              setExportDataDownlineId(e.target.value);
+                            }
+                          }}
+                        >
+                          <option value="0">--- Pilih Downline ---</option>
+                          {downlineList.map((el, i) => {
+                            return (
+                              <option key={i} value={el.id}>
+                                {el?.name}
+                              </option>
+                            );
+                          })}
+                        </CFormSelect>
+                      </CCol>
+                    </CRow>
+                  </CCol>
+                  <CCol></CCol>
+                </CRow>
+              </>
+            )}
           </CModalBody>
           <CModalFooter>
             <CButton
@@ -680,6 +774,26 @@ export default function Client() {
                 }}
               >
                 Save
+              </CButton>
+            )}
+            {modalActionType === 'export_data' && (
+              <CButton
+                color="info text-white"
+                onClick={() => {
+                  if (
+                    !exportDataClientId &&
+                    (exportDataDownlineId || exportDataStatus)
+                  ) {
+                    toast.error('Please choose your client');
+                  } else {
+                    window.open(
+                      `https://upload.aliweb.top/export.php?client=${exportDataClientId}&downline=${exportDataDownlineId}&status=${exportDataStatus}`,
+                      '_blank'
+                    );
+                  }
+                }}
+              >
+                Export
               </CButton>
             )}
           </CModalFooter>

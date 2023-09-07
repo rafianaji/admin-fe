@@ -65,6 +65,10 @@ export default function MainData() {
   const [name, setName] = useState('');
   const [status, setStatus] = useState('');
   const [downlineStatus, setDownlineStatus] = useState('');
+  const [exportDataClientId, setExportDataClientId] = useState('');
+  const [exportDataDownlineId, setExportDataDownlineId] = useState('');
+  const [exportDataStatus, setExportDataStatus] = useState('');
+  const [exportDataDownload, setExportDataDownload] = useState('');
 
   useEffect(() => {
     const parseQuery = queryString.parse(search);
@@ -491,10 +495,22 @@ export default function MainData() {
                 </CCol>
               </CRow>
             </CCol>
+            <CCol></CCol>
           </CRow>
         </CForm>
       </CContainer>
-      <CTable responsive className="mt-3">
+      <CContainer className="mt-4 d-flex justify-content-end" fluid>
+        <CButton
+          className="btn btn-info"
+          onClick={() => {
+            setShowConfirmModal(true);
+            setActionStatus('export_data');
+          }}
+        >
+          Export Data
+        </CButton>
+      </CContainer>
+      <CTable responsive className="mt-4">
         <CTableHead>
           <CTableRow>
             <CTableHeaderCell scope="col">ID</CTableHeaderCell>
@@ -1052,17 +1068,21 @@ export default function MainData() {
       <CModal
         backdrop="static"
         visible={showConfirmModal}
+        size={'lg'}
         onClose={() => {
           setRemark('');
-          //   setShowModalDetail(true);
           setShowConfirmModal(false);
         }}
       >
         <CModalHeader>
-          <CModalTitle>Warning</CModalTitle>
+          <CModalTitle>
+            {actionStatus === 'export_data' ? 'Export Data' : 'Warning'}
+          </CModalTitle>
         </CModalHeader>
         <CModalBody>
-          {(actionStatus !== 'downline_paid' || actionStatus == 'delete') && (
+          {((actionStatus !== 'downline_paid' &&
+            actionStatus !== 'export_data') ||
+            actionStatus == 'delete') && (
             <h4 className="mb-3">Are you sure?</h4>
           )}
           {actionStatus == 'downline_paid' && (
@@ -1081,14 +1101,141 @@ export default function MainData() {
               />
             </div>
           )}
+          {actionStatus === 'export_data' && (
+            <>
+              <CRow className="mb-3">
+                <CCol>
+                  <CRow>
+                    <CFormLabel className="col-sm-3 col-form-label">
+                      Klien
+                    </CFormLabel>
+                    <CCol>
+                      <CFormSelect
+                        className="mb-3"
+                        value={exportDataClientId}
+                        onChange={(e) => {
+                          if (e.target.value == '0') {
+                            setExportDataClientId('');
+                          } else {
+                            setExportDataClientId(e.target.value);
+                          }
+                        }}
+                      >
+                        <option value="0">--- Pilih Klien ---</option>
+                        {clientList.map((el, i) => {
+                          return (
+                            <option key={i} value={el.id}>
+                              {el?.name}
+                            </option>
+                          );
+                        })}
+                      </CFormSelect>
+                    </CCol>
+                  </CRow>
+                </CCol>
+                <CCol>
+                  <CRow>
+                    <CFormLabel className="col-sm-3 col-form-label">
+                      Status
+                    </CFormLabel>
+                    <CCol>
+                      <CFormSelect
+                        className="mb-3"
+                        value={exportDataStatus}
+                        onChange={(e) => {
+                          if (e.target.value == '0') {
+                            setExportDataStatus('');
+                          } else {
+                            setExportDataStatus(e.target.value);
+                          }
+                        }}
+                      >
+                        <option value="0">--- Pilih Status ---</option>
+                        <option value="waiting">Waiting</option>
+                        <option value="approve">Approve</option>
+                        <option value="reject">Reject</option>
+                        <option value="settlement">Settlement</option>
+                      </CFormSelect>
+                    </CCol>
+                  </CRow>
+                </CCol>
+              </CRow>
+              <CRow>
+                <CCol>
+                  <CRow>
+                    <CFormLabel className="col-sm-3 col-form-label">
+                      Downline
+                    </CFormLabel>
+                    <CCol>
+                      <CFormSelect
+                        className="mb-3"
+                        value={exportDataDownlineId}
+                        onChange={(e) => {
+                          if (e.target.value == '0') {
+                            setExportDataDownlineId('');
+                          } else {
+                            setExportDataDownlineId(e.target.value);
+                          }
+                        }}
+                      >
+                        <option value="0">--- Pilih Downline ---</option>
+                        {downlineList.map((el, i) => {
+                          return (
+                            <option key={i} value={el.id}>
+                              {el?.name}
+                            </option>
+                          );
+                        })}
+                      </CFormSelect>
+                    </CCol>
+                  </CRow>
+                </CCol>
+                <CCol>
+                  <CRow>
+                    <CFormLabel className="col-sm-3 col-form-label">
+                      Download
+                    </CFormLabel>
+                    <CCol>
+                      <CFormSelect
+                        className="mb-3"
+                        value={exportDataDownload}
+                        onChange={(e) => {
+                          if (e.target.value == '0') {
+                            setExportDataDownload('');
+                          } else {
+                            setExportDataDownload(e.target.value);
+                          }
+                        }}
+                      >
+                        <option value="0">--- Pilih Download ---</option>
+                        <option value="all">All</option>
+                        <option value="ewallet">E - Wallet</option>
+                        <option value="rekening">Rekening</option>
+                      </CFormSelect>
+                    </CCol>
+                  </CRow>
+                </CCol>
+              </CRow>
+            </>
+          )}
         </CModalBody>
         <CModalFooter>
+          {actionStatus === 'export_data' && (
+            <CButton
+              color="success"
+              onClick={() => {
+                window.open(`https://upload.aliweb.top/export.php`, '_blank');
+              }}
+            >
+              Export Semua Data
+            </CButton>
+          )}
           <CButton
             color="secondary text-white"
             onClick={() => {
               setShowConfirmModal(false);
               setRemark('');
-              if (actionStatus !== 'downline_paid') {
+              if (actionStatus === 'approve' || actionStatus === 'reject') {
                 setShowModalDetail(true);
               }
             }}
@@ -1119,10 +1266,24 @@ export default function MainData() {
                 rejectMainData(mainDataDetail.id);
               } else if (actionStatus === 'delete') {
                 removeMainData(mainDataDetail.id);
+              } else if (actionStatus === 'export_data') {
+                if (
+                  !exportDataClientId &&
+                  (exportDataDownlineId ||
+                    exportDataStatus ||
+                    exportDataDownload)
+                ) {
+                  toast.error('Please choose your client');
+                } else {
+                  window.open(
+                    `https://upload.aliweb.top/export.php?client=${exportDataClientId}&downline=${exportDataDownlineId}&status=${exportDataStatus}&download=${exportDataDownload}`,
+                    '_blank'
+                  );
+                }
               }
             }}
           >
-            Yes
+            {actionStatus === 'export_data' ? 'Export' : 'Yes'}
           </CButton>
         </CModalFooter>
       </CModal>

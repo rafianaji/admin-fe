@@ -131,3 +131,15 @@ $enable-rtl: true;
     transform: rotate(360deg);
   }
 }
+
+.page-not-found-image {
+  width: auto;
+  height: 100vh;
+}
+
+@media screen and (max-width: 1024px) {
+  .page-not-found-image {
+    width: 100% !important;
+    height: auto !important;
+  }
+}

@@ -79,7 +79,9 @@ export default function Downline() {
   });
 
   const formValidation = () => {
-    setErrorForm(formik.errors);
+    if (Object.keys(formik.errors).length > 0 && formik.isSubmitting) {
+      setErrorForm(formik.errors);
+    }
   };
 
   useEffect(() => {

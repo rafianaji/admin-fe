@@ -27,7 +27,7 @@ import {
 } from 'src/services/mainDataApi';
 import { ccNumber, expFormat } from 'src/shared/helpers/ccFormat';
 import * as yup from 'yup';
-import NotFoundImage from 'src/assets/images/freepik-page-not-found.png';
+import NotFoundImage from 'src/assets/images/page-not-found.jpg';
 import { dateConvertToYMD } from 'src/shared/helpers/dateHelper';
 
 export default function Form() {
@@ -977,12 +977,16 @@ export default function Form() {
           </CContainer>
         </div>
       ) : (
-        <div className="d-flex justify-content-center">
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ height: '100vh' }}
+        >
           <img
             src={NotFoundImage}
-            style={{ width: 'auto', height: '100vh' }}
-            alt="Designed by freepik"
-            title="Designed by freepik"
+            className="page-not-found-image"
+            // style={{ width: 'auto', height: '100vh' }}
+            // alt="Designed by freepik"
+            // title="Designed by freepik"
           />
         </div>
       )}
