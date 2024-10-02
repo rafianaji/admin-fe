@@ -97,12 +97,12 @@ $enable-rtl: true;
 
 .loader-spinner {
   position: absolute;
-  left: 50%;
-  top: 50%;
+  // left: 50%;
+  // top: 50%;
   z-index: 1;
   width: 60px;
   height: 60px;
-  margin: -76px 0 0 -76px;
+  // margin: -76px 0 0 -76px;
   border: 8px solid #f3f3f3;
   border-radius: 50%;
   border-top: 8px solid #000;
